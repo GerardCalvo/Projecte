@@ -1,7 +1,7 @@
 <div class="container">
-    <h3>COMARQUES:</h3>
+    <h3>MUNICIPIS:</h3>
     <ul class="comarques" id="llistaMunicipis">
-        <li>Carregant comarques...</li>
+        <li>Carregant municipis...</li>
     </ul>
 </div>
 
