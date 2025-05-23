@@ -1,88 +1,96 @@
 <?php
-// Mostrar errors
+// Mostrar errores
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Obrir/crear base de dades
+// Ruta base de la base de datos
 $db_path = __DIR__ . '/residus.db';
-$db = new SQLite3($db_path);
-if (!$db) die("❌ Error obrint la base de dades.");
-echo "✔ Base de dades oberta: $db_path<br>";
-echo "📁 Ruta absoluta: " . realpath($db_path) . "<br>";
 
-// Funció per crear taules
-function crearTaula($db, $sql, $nom) {
-    if (!$db->exec($sql)) {
-        die("❌ Error creant taula $nom: " . $db->lastErrorMsg() . "<br>");
+// Si no existe la base, crearla y las tablas
+if (!file_exists($db_path)) {
+    echo "🛠 Base de dades no existeix. Creant base de dades i taules...\n";
+    $db = new SQLite3($db_path);
+    if (!$db) die("❌ No s'ha pogut crear la base de dades.");
+
+    $tablas = [
+        "CREATE TABLE IF NOT EXISTS comarques (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nom TEXT UNIQUE
+        )",
+        "CREATE TABLE IF NOT EXISTS municipis (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codi_municipi TEXT UNIQUE,
+            nom TEXT,
+            comarca_id INTEGER,
+            FOREIGN KEY(comarca_id) REFERENCES comarques(id)
+        )",
+        "CREATE TABLE IF NOT EXISTS dades_residus (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            any INTEGER,
+            municipi_id INTEGER,
+            comarca_id INTEGER,
+            poblacio INTEGER,
+            autocompostatge REAL,
+            mat_ria_org_nica REAL,
+            poda_i_jardineria REAL,
+            paper_i_cartr REAL,
+            vidre REAL,
+            envasos_lleugers REAL,
+            residus_voluminosos_fusta REAL,
+            raee REAL,
+            ferralla REAL,
+            olis_vegetals REAL,
+            t_txtil REAL,
+            runes REAL,
+            res_especials_en_petites REAL,
+            piles REAL,
+            medicaments REAL,
+            altres_recollides_selectives REAL,
+            total_recollida_selectiva REAL,
+            r_s_r_m_total REAL,
+            kg_hab_any_recollida_selectiva REAL,
+            resta_a_dip_sit REAL,
+            resta_a_incineraci REAL,
+            resta_a_tractament_mec_nic REAL,
+            resta_sense_desglossar REAL,
+            suma_fracci_resta REAL,
+            f_r_r_m REAL,
+            generaci_residus_municipal REAL,
+            kg_hab_dia REAL,
+            kg_hab_any REAL,
+            FOREIGN KEY(municipi_id) REFERENCES municipis(id),
+            FOREIGN KEY(comarca_id) REFERENCES comarques(id)
+        )",
+        "CREATE TABLE IF NOT EXISTS dades_geo (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            municipi_id INTEGER,
+            prov_ncia TEXT,
+            utm_x REAL,
+            utm_y REAL,
+            longitud REAL,
+            latitud REAL,
+            geocoded_type TEXT,
+            geocoded_coordinates TEXT,
+            FOREIGN KEY(municipi_id) REFERENCES municipis(id)
+        )"
+    ];
+
+    foreach ($tablas as $sql) {
+        if (!$db->exec($sql)) {
+            die("❌ Error creant taula: " . $db->lastErrorMsg());
+        }
     }
-    echo "✔ Taula $nom creada.<br>";
+    chmod($db_path, 0666);
+    echo "✔ Base de dades i taules creades amb èxit.\n\n";
+} else {
+    $db = new SQLite3($db_path);
+    echo "✔ Base de dades oberta: $db_path\n\n";
 }
-
-// Crear taules
-crearTaula($db, "CREATE TABLE IF NOT EXISTS comarques (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT UNIQUE)", "comarques");
-
-crearTaula($db, "CREATE TABLE IF NOT EXISTS municipis (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    codi_municipi TEXT UNIQUE,
-    nom TEXT,
-    comarca_id INTEGER,
-    FOREIGN KEY(comarca_id) REFERENCES comarques(id))", "municipis");
-
-crearTaula($db, "CREATE TABLE IF NOT EXISTS dades_residus (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    any INTEGER,
-    municipi_id INTEGER,
-    comarca_id INTEGER,
-    poblacio INTEGER,
-    autocompostatge REAL,
-    mat_ria_org_nica REAL,
-    poda_i_jardineria REAL,
-    paper_i_cartr REAL,
-    vidre REAL,
-    envasos_lleugers REAL,
-    residus_voluminosos_fusta REAL,
-    raee REAL,
-    ferralla REAL,
-    olis_vegetals REAL,
-    t_txtil REAL,
-    runes REAL,
-    res_especials_en_petites REAL,
-    piles REAL,
-    medicaments REAL,
-    altres_recollides_selectives REAL,
-    total_recollida_selectiva REAL,
-    r_s_r_m_total REAL,
-    kg_hab_any_recollida_selectiva REAL,
-    resta_a_dip_sit REAL,
-    resta_a_incineraci REAL,
-    resta_a_tractament_mec_nic REAL,
-    resta_sense_desglossar REAL,
-    suma_fracci_resta REAL,
-    f_r_r_m REAL,
-    generaci_residus_municipal REAL,
-    kg_hab_dia REAL,
-    kg_hab_any REAL,
-    FOREIGN KEY(municipi_id) REFERENCES municipis(id),
-    FOREIGN KEY(comarca_id) REFERENCES comarques(id))", "dades_residus");
-
-crearTaula($db, "CREATE TABLE IF NOT EXISTS dades_geo (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    municipi_id INTEGER,
-    prov_ncia TEXT,
-    utm_x REAL,
-    utm_y REAL,
-    longitud REAL,
-    latitud REAL,
-    geocoded_type TEXT,
-    geocoded_coordinates TEXT,
-    FOREIGN KEY(municipi_id) REFERENCES municipis(id))", "dades_geo");
 
 // Funció per descarregar dades amb offset
 function descarregarDades($url, $nom) {
-    echo "🔄 Descarregant dades de $nom...<br>";
+    echo "🔄 Descarregant dades de $nom...\n";
     $tots = [];
     $offset = 0;
     $limit = 1000;
@@ -91,7 +99,7 @@ function descarregarDades($url, $nom) {
         $endpoint = "$url?\$limit=$limit&\$offset=$offset";
         $json = file_get_contents($endpoint);
         if (!$json) {
-            echo "⚠️ No s'ha pogut descarregar des de $endpoint<br>";
+            echo "⚠️ No s'ha pogut descarregar des de $endpoint\n";
             break;
         }
 
@@ -99,12 +107,12 @@ function descarregarDades($url, $nom) {
         if (!$dades || count($dades) === 0) break;
 
         $tots = array_merge($tots, $dades);
-        echo "📦 Recuperats " . count($dades) . " registres (offset $offset)<br>";
+        echo "📦 Recuperats " . count($dades) . " registres (offset $offset)\n";
         $offset += $limit;
         usleep(100000); // pausa per no saturar l'API
     }
 
-    echo "✔ Total $nom descarregats: " . count($tots) . " registres.<br>";
+    echo "✔ Total $nom descarregats: " . count($tots) . " registres.\n";
     return $tots;
 }
 
@@ -113,7 +121,7 @@ $rows_residus = descarregarDades("https://analisi.transparenciacatalunya.cat/res
 $rows_geo = descarregarDades("https://analisi.transparenciacatalunya.cat/resource/wpyq-we8x.json", "geogràfiques");
 
 // Preparar inserció de dades_residus
-echo "<br>📝 Inserint dades de residus...<br>";
+echo "\n📝 Inserint dades de residus...\n";
 $stmt = $db->prepare("INSERT INTO dades_residus (
     any, municipi_id, comarca_id, poblacio,
     autocompostatge, mat_ria_org_nica, poda_i_jardineria, paper_i_cartr,
@@ -142,9 +150,11 @@ foreach ($rows_residus as $r) {
     $codi = $r['codi_municipi'] ?? '';
     if (!$comarca || !$municipi || !$codi) continue;
 
+    // Inserir comarca
     $db->exec("INSERT OR IGNORE INTO comarques (nom) VALUES ('" . SQLite3::escapeString($comarca) . "')");
     $comarca_id = $db->querySingle("SELECT id FROM comarques WHERE nom = '" . SQLite3::escapeString($comarca) . "'");
 
+    // Inserir municipi
     $db->exec("INSERT OR IGNORE INTO municipis (codi_municipi, nom, comarca_id) VALUES (
         '" . SQLite3::escapeString($codi) . "', '" . SQLite3::escapeString($municipi) . "', $comarca_id)");
     $municipi_id = $db->querySingle("SELECT id FROM municipis WHERE codi_municipi = '" . SQLite3::escapeString($codi) . "'");
@@ -171,11 +181,10 @@ foreach ($rows_residus as $r) {
     $stmt->execute();
     $insertats++;
 }
-echo "📊 Registres residus: $insertats<br>";
-echo "✔ Dades de residus inserides: $insertats registres.<br>";
+echo "📊 Registres residus inserits: $insertats\n";
 
 // Inserir dades geogràfiques
-echo "<br>🗺 Inserint dades geogràfiques...<br>";
+echo "\n🗺 Inserint dades geogràfiques...\n";
 $stmt_geo = $db->prepare("INSERT INTO dades_geo (
     municipi_id, prov_ncia, utm_x, utm_y, longitud, latitud, geocoded_type, geocoded_coordinates)
     VALUES (:municipi_id, :prov_ncia, :utm_x, :utm_y, :longitud, :latitud, :geocoded_type, :geocoded_coordinates)");
@@ -201,8 +210,7 @@ foreach ($rows_geo as $r) {
     $stmt_geo->execute();
     $insertats_geo++;
 }
-echo "✔ Dades geogràfiques inserides: $insertats_geo registres.<br>";
+echo "✔ Dades geogràfiques inserides: $insertats_geo registres.\n";
 
 $db->close();
-echo "<br>✅ Procés completat!";
-?>
+echo "\n✅ Procés completat!\n";
