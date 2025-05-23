@@ -3,6 +3,12 @@
     <ul class="comarques" id="dadesMunicipi">
         <li>Carregant dades del municipi...</li>
     </ul>
+
+    <!-- Botó per veure la geolocalització -->
+    <button id="veureGeoLoc" style="margin-top: 1rem;">Mostra geolocalització</button>
+    <ul id="geoLocResultat">
+        <li>Esperant acció...</li>
+    </ul>
 </div>
 
 <script>
@@ -51,7 +57,6 @@ if (!municipiId) {
                 const detalls = document.createElement('ul');
 
                 for (const [clau, valor] of Object.entries(registre)) {
-                    // Evita tornar a mostrar 'id' i 'nom'
                     if (clau !== 'id' && clau !== 'nom') {
                         const item = document.createElement('li');
                         item.textContent = `${clau.replace(/_/g, ' ')}: ${valor}`;
@@ -68,4 +73,34 @@ if (!municipiId) {
             console.error('Error:', error);
         });
 }
+
+// 3. Afegir funcionalitat al botó de geolocalització
+document.getElementById('veureGeoLoc').addEventListener('click', () => {
+    const resultat = document.getElementById('geoLocResultat');
+
+    if (!municipiId) {
+        resultat.innerHTML = '<li>Cap municipi seleccionat.</li>';
+        return;
+    }
+
+    fetch('api/geoLoc.php?municipi=' + encodeURIComponent(municipiId))
+        .then(response => response.json())
+        .then(data => {
+            resultat.innerHTML = '';
+            if (Object.keys(data).length === 0) {
+                resultat.innerHTML = '<li>No s\'han trobat dades de geolocalització.</li>';
+                return;
+            }
+
+            for (const [clau, valor] of Object.entries(data)) {
+                const li = document.createElement('li');
+                li.textContent = `${clau.replace(/_/g, ' ')}: ${valor}`;
+                resultat.appendChild(li);
+            }
+        })
+        .catch(error => {
+            resultat.innerHTML = '<li>Error en carregar les dades de geolocalització.</li>';
+            console.error('Error:', error);
+        });
+});
 </script>
