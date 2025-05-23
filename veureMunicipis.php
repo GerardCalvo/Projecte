@@ -6,7 +6,15 @@
 </div>
 
 <script>
-fetch('api/municipis.php')
+const params = new URLSearchParams(window.location.search);
+const comarcaId = params.get('comarca');
+
+let url = 'api/municipis.php';
+if (comarcaId) {
+    url += '?comarca=' + encodeURIComponent(comarcaId);
+}
+
+fetch(url)
     .then(response => response.json())
     .then(municipis => {
         const llista = document.getElementById('llistaMunicipis');

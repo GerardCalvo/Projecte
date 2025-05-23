@@ -1,26 +1,40 @@
 <?php
-// 1. Crear/obrir la base de dades SQLite
-$db = new SQLite3('residus.db');
+// Mostrar errors
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// 2. Crear taules normalitzades
+// Obrir/crear base de dades
+$db_path = __DIR__ . '/residus.db';
+$db = new SQLite3($db_path);
+if (!$db) {
+    die("Error obrint la base de dades.");
+}
+echo "✔ Base de dades oberta: $db_path<br>";
 
-// Taula de comarques
-$db->exec("CREATE TABLE IF NOT EXISTS comarques (
+// Crear taules
+function crearTaula($db, $sql, $nom) {
+    $result = $db->exec($sql);
+    if (!$result) {
+        die("❌ Error creant taula $nom: " . $db->lastErrorMsg() . "<br>");
+    }
+    echo "✔ Taula $nom creada.<br>";
+}
+
+crearTaula($db, "CREATE TABLE IF NOT EXISTS comarques (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT UNIQUE
-)");
+)", "comarques");
 
-// Taula de municipis
-$db->exec("CREATE TABLE IF NOT EXISTS municipis (
+crearTaula($db, "CREATE TABLE IF NOT EXISTS municipis (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     codi_municipi TEXT UNIQUE,
     nom TEXT,
     comarca_id INTEGER,
     FOREIGN KEY(comarca_id) REFERENCES comarques(id)
-)");
+)", "municipis");
 
-// Taula de dades de residus
-$db->exec("CREATE TABLE IF NOT EXISTS dades_residus (
+crearTaula($db, "CREATE TABLE IF NOT EXISTS dades_residus (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     any INTEGER,
     municipi_id INTEGER,
@@ -56,95 +70,128 @@ $db->exec("CREATE TABLE IF NOT EXISTS dades_residus (
     kg_hab_any REAL,
     FOREIGN KEY(municipi_id) REFERENCES municipis(id),
     FOREIGN KEY(comarca_id) REFERENCES comarques(id)
+)", "dades_residus");
+
+crearTaula($db, "CREATE TABLE IF NOT EXISTS dades_geo (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    municipi_id INTEGER,
+    prov_ncia TEXT,
+    utm_x REAL,
+    utm_y REAL,
+    longitud REAL,
+    latitud REAL,
+    geocoded_type TEXT,
+    geocoded_coordinates TEXT,
+    FOREIGN KEY(municipi_id) REFERENCES municipis(id)
+)", "dades_geo");
+
+// Descarregar dades
+function descarregarDades($url, $nom) {
+    echo "🔄 Descarregant dades de $nom...<br>";
+    $json = file_get_contents($url);
+    if (!$json) die("❌ No s'han pogut obtenir dades de $nom.");
+    $dades = json_decode($json, true);
+    echo "✔ Dades de $nom descarregades: " . count($dades) . " registres.<br>";
+    return $dades;
+}
+
+$rows_residus = descarregarDades("https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json", "residus");
+$rows_geo = descarregarDades("https://analisi.transparenciacatalunya.cat/resource/wpyq-we8x.json", "geogràfiques");
+
+// Inserir dades de residus
+echo "<br>📝 Inserint dades de residus...<br>";
+$stmt_residus = $db->prepare("INSERT INTO dades_residus (
+    any, municipi_id, comarca_id, poblacio,
+    autocompostatge, mat_ria_org_nica, poda_i_jardineria,
+    paper_i_cartr, vidre, envasos_lleugers, residus_voluminosos_fusta,
+    raee, ferralla, olis_vegetals, t_xtil, runes,
+    res_especials_en_petites, piles, medicaments, altres_recollides_selectives,
+    total_recollida_selectiva, r_s_r_m_total, kg_hab_any_recollida_selectiva,
+    resta_a_dip_sit, resta_a_incineraci, resta_a_tractament_mec_nic,
+    resta_sense_desglossar, suma_fracci_resta, f_r_r_m, generaci_residus_municipal,
+    kg_hab_dia, kg_hab_any
+) VALUES (
+    :any, :municipi_id, :comarca_id, :poblacio,
+    :autocompostatge, :mat_ria_org_nica, :poda_i_jardineria,
+    :paper_i_cartr, :vidre, :envasos_lleugers, :residus_voluminosos_fusta,
+    :raee, :ferralla, :olis_vegetals, :t_xtil, :runes,
+    :res_especials_en_petites, :piles, :medicaments, :altres_recollides_selectives,
+    :total_recollida_selectiva, :r_s_r_m_total, :kg_hab_any_recollida_selectiva,
+    :resta_a_dip_sit, :resta_a_incineraci, :resta_a_tractament_mec_nic,
+    :resta_sense_desglossar, :suma_fracci_resta, :f_r_r_m, :generaci_residus_municipal,
+    :kg_hab_dia, :kg_hab_any
 )");
 
-// 3. Descarregar dades del JSON extret de l'API
-$url = "https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json";
-$data = file_get_contents($url);
-if (!$data) {
-    die("No s'han pogut obtenir dades de l'API.");
+foreach ($rows_residus as $r) {
+    $comarca = $r['comarca'] ?? '';
+    $municipi = $r['municipi'] ?? '';
+    $codi = $r['codi_municipi'] ?? '';
+
+    // Comarca
+    $db->exec("INSERT OR IGNORE INTO comarques (nom) VALUES ('" . SQLite3::escapeString($comarca) . "')");
+    $comarca_id = $db->querySingle("SELECT id FROM comarques WHERE nom = '" . SQLite3::escapeString($comarca) . "'");
+
+    // Municipi
+    $db->exec("INSERT OR IGNORE INTO municipis (codi_municipi, nom, comarca_id) VALUES (
+        '" . SQLite3::escapeString($codi) . "',
+        '" . SQLite3::escapeString($municipi) . "',
+        $comarca_id
+    )");
+    $municipi_id = $db->querySingle("SELECT id FROM municipis WHERE codi_municipi = '" . SQLite3::escapeString($codi) . "'");
+
+    // Vinculació i inserció
+    $val = fn($k) => isset($r[$k]) ? floatval($r[$k]) : 0;
+
+    $stmt_residus->bindValue(':any', intval($r['any'] ?? 0));
+    $stmt_residus->bindValue(':municipi_id', $municipi_id);
+    $stmt_residus->bindValue(':comarca_id', $comarca_id);
+    $stmt_residus->bindValue(':poblacio', intval($r['poblaci'] ?? 0));
+    $keys = [
+        'autocompostatge', 'mat_ria_org_nica', 'poda_i_jardineria', 'paper_i_cartr',
+        'vidre', 'envasos_lleugers', 'residus_voluminosos_fusta', 'raee', 'ferralla',
+        'olis_vegetals', 't_xtil', 'runes', 'res_especials_en_petites', 'piles',
+        'medicaments', 'altres_recollides_selectives', 'total_recollida_selectiva',
+        'r_s_r_m_total', 'kg_hab_any_recollida_selectiva', 'resta_a_dip_sit',
+        'resta_a_incineraci', 'resta_a_tractament_mec_nic', 'resta_sense_desglossar',
+        'suma_fracci_resta', 'f_r_r_m', 'generaci_residus_municipal',
+        'kg_hab_dia', 'kg_hab_any'
+    ];
+    foreach ($keys as $k) {
+        $stmt_residus->bindValue(':' . $k, $val($k));
+    }
+
+    $stmt_residus->execute();
 }
-$rows = json_decode($data, true);
+echo "✔ Dades de residus inserides.<br>";
 
-// 4. Preparar consulta INSERT per dades_residus
-$stmt = $db->prepare("
-    INSERT INTO dades_residus (
-        any, municipi_id, comarca_id, poblacio,
-        autocompostatge, mat_ria_org_nica, poda_i_jardineria,
-        paper_i_cartr, vidre, envasos_lleugers, residus_voluminosos_fusta,
-        raee, ferralla, olis_vegetals, t_xtil, runes,
-        res_especials_en_petites, piles, medicaments, altres_recollides_selectives,
-        total_recollida_selectiva, r_s_r_m_total, kg_hab_any_recollida_selectiva,
-        resta_a_dip_sit, resta_a_incineraci, resta_a_tractament_mec_nic,
-        resta_sense_desglossar, suma_fracci_resta, f_r_r_m, generaci_residus_municipal,
-        kg_hab_dia, kg_hab_any
-    ) VALUES (
-        :any, :municipi_id, :comarca_id, :poblacio,
-        :autocompostatge, :mat_ria_org_nica, :poda_i_jardineria,
-        :paper_i_cartr, :vidre, :envasos_lleugers, :residus_voluminosos_fusta,
-        :raee, :ferralla, :olis_vegetals, :t_xtil, :runes,
-        :res_especials_en_petites, :piles, :medicaments, :altres_recollides_selectives,
-        :total_recollida_selectiva, :r_s_r_m_total, :kg_hab_any_recollida_selectiva,
-        :resta_a_dip_sit, :resta_a_incineraci, :resta_a_tractament_mec_nic,
-        :resta_sense_desglossar, :suma_fracci_resta, :f_r_r_m, :generaci_residus_municipal,
-        :kg_hab_dia, :kg_hab_any
-    );
-");
+// Inserir dades geogràfiques
+echo "<br>🗺 Inserint dades geogràfiques...<br>";
+$stmt_geo = $db->prepare("INSERT INTO dades_geo (
+    municipi_id, prov_ncia, utm_x, utm_y, longitud, latitud, geocoded_type, geocoded_coordinates
+) VALUES (
+    :municipi_id, :prov_ncia, :utm_x, :utm_y, :longitud, :latitud, :geocoded_type, :geocoded_coordinates
+)");
 
-// 5. Inserir les dades
-foreach ($rows as $r) {
-    // -- COMARCA
-    $comarca_nom = $r['comarca'] ?? '';
-    $stmt_comarca = $db->prepare("INSERT OR IGNORE INTO comarques (nom) VALUES (:nom)");
-    $stmt_comarca->bindValue(':nom', $comarca_nom);
-    $stmt_comarca->execute();
-    $comarca_id = $db->querySingle("SELECT id FROM comarques WHERE nom = '{$comarca_nom}'");
+foreach ($rows_geo as $r) {
+    $codi = $r['codi_municipi'] ?? '';
+    if (!$codi) continue;
+    $municipi_id = $db->querySingle("SELECT id FROM municipis WHERE codi_municipi = '" . SQLite3::escapeString($codi) . "'");
+    if (!$municipi_id) continue;
 
-    // -- MUNICIPI
-    $codi_municipi = $r['codi_municipi'] ?? '';
-    $municipi_nom = $r['municipi'] ?? '';
-    $stmt_municipi = $db->prepare("INSERT OR IGNORE INTO municipis (codi_municipi, nom, comarca_id) VALUES (:codi, :nom, :comarca_id)");
-    $stmt_municipi->bindValue(':codi', $codi_municipi);
-    $stmt_municipi->bindValue(':nom', $municipi_nom);
-    $stmt_municipi->bindValue(':comarca_id', $comarca_id);
-    $stmt_municipi->execute();
-    $municipi_id = $db->querySingle("SELECT id FROM municipis WHERE codi_municipi = '{$codi_municipi}'");
+    $geo = $r['geocoded_column'] ?? null;
 
-    // -- DADES DE RESIDUS
-    $stmt->bindValue(':any', intval($r['any'] ?? 0));
-    $stmt->bindValue(':municipi_id', $municipi_id);
-    $stmt->bindValue(':comarca_id', $comarca_id);
-    $stmt->bindValue(':poblacio', intval($r['poblaci'] ?? 0));
-    $stmt->bindValue(':autocompostatge', floatval($r['autocompostatge'] ?? 0));
-    $stmt->bindValue(':mat_ria_org_nica', floatval($r['mat_ria_org_nica'] ?? 0));
-    $stmt->bindValue(':poda_i_jardineria', floatval($r['poda_i_jardineria'] ?? 0));
-    $stmt->bindValue(':paper_i_cartr', floatval($r['paper_i_cartr'] ?? 0));
-    $stmt->bindValue(':vidre', floatval($r['vidre'] ?? 0));
-    $stmt->bindValue(':envasos_lleugers', floatval($r['envasos_lleugers'] ?? 0));
-    $stmt->bindValue(':residus_voluminosos_fusta', floatval($r['residus_voluminosos_fusta'] ?? 0));
-    $stmt->bindValue(':raee', floatval($r['raee'] ?? 0));
-    $stmt->bindValue(':ferralla', floatval($r['ferralla'] ?? 0));
-    $stmt->bindValue(':olis_vegetals', floatval($r['olis_vegetals'] ?? 0));
-    $stmt->bindValue(':t_xtil', floatval($r['t_xtil'] ?? 0));
-    $stmt->bindValue(':runes', floatval($r['runes'] ?? 0));
-    $stmt->bindValue(':res_especials_en_petites', floatval($r['res_especials_en_petites'] ?? 0));
-    $stmt->bindValue(':piles', floatval($r['piles'] ?? 0));
-    $stmt->bindValue(':medicaments', floatval($r['medicaments'] ?? 0));
-    $stmt->bindValue(':altres_recollides_selectives', floatval($r['altres_recollides_selectives'] ?? 0));
-    $stmt->bindValue(':total_recollida_selectiva', floatval($r['total_recollida_selectiva'] ?? 0));
-    $stmt->bindValue(':r_s_r_m_total', floatval($r['r_s_r_m_total'] ?? 0));
-    $stmt->bindValue(':kg_hab_any_recollida_selectiva', floatval($r['kg_hab_any_recollida_selectiva'] ?? 0));
-    $stmt->bindValue(':resta_a_dip_sit', floatval($r['resta_a_dip_sit'] ?? 0));
-    $stmt->bindValue(':resta_a_incineraci', floatval($r['resta_a_incineraci'] ?? 0));
-    $stmt->bindValue(':resta_a_tractament_mec_nic', floatval($r['resta_a_tractament_mec_nic'] ?? 0));
-    $stmt->bindValue(':resta_sense_desglossar', floatval($r['resta_sense_desglossar'] ?? 0));
-    $stmt->bindValue(':suma_fracci_resta', floatval($r['suma_fracci_resta'] ?? 0));
-    $stmt->bindValue(':f_r_r_m', floatval($r['f_r_r_m'] ?? 0));
-    $stmt->bindValue(':generaci_residus_municipal', floatval($r['generaci_residus_municipal'] ?? 0));
-    $stmt->bindValue(':kg_hab_dia', floatval($r['kg_hab_dia'] ?? 0));
-    $stmt->bindValue(':kg_hab_any', floatval($r['kg_hab_any'] ?? 0));
-    $stmt->execute();
+    $stmt_geo->bindValue(':municipi_id', $municipi_id);
+    $stmt_geo->bindValue(':prov_ncia', $r['prov_ncia'] ?? null);
+    $stmt_geo->bindValue(':utm_x', isset($r['utm_x']) ? floatval($r['utm_x']) : null);
+    $stmt_geo->bindValue(':utm_y', isset($r['utm_y']) ? floatval($r['utm_y']) : null);
+    $stmt_geo->bindValue(':longitud', isset($r['longitud']) ? floatval($r['longitud']) : null);
+    $stmt_geo->bindValue(':latitud', isset($r['latitud']) ? floatval($r['latitud']) : null);
+    $stmt_geo->bindValue(':geocoded_type', is_array($geo) ? ($geo['type'] ?? null) : null);
+    $stmt_geo->bindValue(':geocoded_coordinates', is_array($geo) ? json_encode($geo['coordinates'] ?? null) : null);
+    $stmt_geo->execute();
 }
+echo "✔ Dades geogràfiques inserides.<br>";
 
 $db->close();
+echo "<br>✅ Procés completat!";
 ?>

@@ -4,6 +4,9 @@ include '../includes/dbConnect.proc.php';
 
 // Peticions GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (isset($_GET[''])){
+
+    }else {    
         $result = $db->query("SELECT * FROM comarques ORDER BY id");
         $comarques = [];
         while ($comarca = $result->fetchArray(SQLITE3_ASSOC)){
@@ -11,4 +14,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
         //header('Content-Type: application/json');
         echo json_encode($comarques);
+    }
 }
