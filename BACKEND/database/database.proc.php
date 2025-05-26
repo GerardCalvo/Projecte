@@ -30,7 +30,7 @@ if (!file_exists($db_path)) {
             any INTEGER,
             municipi_id INTEGER,
             comarca_id INTEGER,
-            poblacio INTEGER,
+            poblaci INTEGER,
             autocompostatge REAL,
             mat_ria_org_nica REAL,
             poda_i_jardineria REAL,
@@ -41,7 +41,7 @@ if (!file_exists($db_path)) {
             raee REAL,
             ferralla REAL,
             olis_vegetals REAL,
-            t_txtil REAL,
+            t_xtil REAL,
             runes REAL,
             res_especials_en_petites REAL,
             piles REAL,
@@ -123,10 +123,10 @@ $rows_geo = descarregarDades("https://analisi.transparenciacatalunya.cat/resourc
 // Preparar inserció de dades_residus
 echo "\n📝 Inserint dades de residus...\n";
 $stmt = $db->prepare("INSERT INTO dades_residus (
-    any, municipi_id, comarca_id, poblacio,
+    any, municipi_id, comarca_id, poblaci,
     autocompostatge, mat_ria_org_nica, poda_i_jardineria, paper_i_cartr,
     vidre, envasos_lleugers, residus_voluminosos_fusta, raee, ferralla,
-    olis_vegetals, t_txtil, runes, res_especials_en_petites, piles, medicaments,
+    olis_vegetals, t_xtil, runes, res_especials_en_petites, piles, medicaments,
     altres_recollides_selectives, total_recollida_selectiva, r_s_r_m_total,
     kg_hab_any_recollida_selectiva, resta_a_dip_sit, resta_a_incineraci,
     resta_a_tractament_mec_nic, resta_sense_desglossar, suma_fracci_resta,
@@ -167,7 +167,7 @@ foreach ($rows_residus as $r) {
     $claus = [
         'autocompostatge', 'mat_ria_org_nica', 'poda_i_jardineria', 'paper_i_cartr',
         'vidre', 'envasos_lleugers', 'residus_voluminosos_fusta', 'raee', 'ferralla',
-        'olis_vegetals', 't_txtil', 'runes', 'res_especials_en_petites', 'piles',
+        'olis_vegetals', 't_xtil', 'runes', 'res_especials_en_petites', 'piles',
         'medicaments', 'altres_recollides_selectives', 'total_recollida_selectiva',
         'r_s_r_m_total', 'kg_hab_any_recollida_selectiva', 'resta_a_dip_sit',
         'resta_a_incineraci', 'resta_a_tractament_mec_nic', 'resta_sense_desglossar',
