@@ -17,9 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 SUM(poda_i_jardineria) AS poda_i_jardineria,
                 SUM(raee) AS raee,
                 SUM(altres_recollides_selectives) AS altres_recollides_select,
-                SUM(t_xtil) AS textil,
+                SUM(t_txtil) AS textil,
                 SUM(ferralla) AS ferralla,
-                SUM(res_especials_en_petites_q) AS residus_petites_q,
+                SUM(res_especials_en_petites) AS residus_esp_petites,
                 SUM(olis_vegetals) AS olis_vegetals,
                 SUM(autocompostatge) AS autocompostatge
             FROM dades_residus
