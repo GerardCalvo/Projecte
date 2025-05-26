@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <title>Increment % recollida selectiva</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+    }
+
+    #controls {
+      margin-bottom: 20px;
+    }
+
+    label {
+      margin-right: 10px;
+    }
+
+    select {
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="controls">
+    <label for="periodeSelect">Període:</label>
+    <select id="periodeSelect">
+      <option value="3">3 anys</option>
+      <option value="5" selected>5 anys</option>
+      <option value="10">10 anys</option>
+    </select>
+
+    <label for="tipusRangSelect">Tipus de rang:</label>
+    <select id="tipusRangSelect">
+      <option value="solapats" selected>Solapats</option>
+      <option value="consecutius">Consecutius (des de 2023)</option>
+    </select>
+
+    <label for="chartTypeSelect">Tipus de gràfic:</label>
+    <select id="chartTypeSelect">
+      <option value="bar" selected>Barres</option>
+      <option value="line">Línia</option>
+    </select>
+  </div>
+
+  <canvas id="incrementChart" width="800" height="400"></canvas>
+
+  <script>
+    let chart;
+
+    async function fetchData() {
+      const response = await fetch("https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$select=any,avg(r_s_r_m_total)&$group=any&$order=any");
+      const data = await response.json();
+
+      const dataMap = {};
+      data.forEach(item => {
+        dataMap[item.any] = parseFloat(item.avg_r_s_r_m_total);
+      });
+
+      return dataMap;
+    }
+
+    function getPeriods(dataMap, range, tipus) {
+      const anys = Object.keys(dataMap).map(Number).sort((a, b) => a - b);
+      const periods = [];
+
+      if (tipus === 'solapats') {
+        for (let i = 0; i < anys.length; i++) {
+          const start = anys[i];
+          const end = start + range;
+          if (anys.includes(end)) {
+            periods.push([start, end]);
+          }
+        }
+      } else if (tipus === 'consecutius') {
+        const startYear = 2023;
+        const endYear = Math.min(...anys);
+        for (let end = startYear; end - range >= endYear; end -= range) {
+          const start = end - range;
+          if (dataMap[start] !== undefined && dataMap[end] !== undefined) {
+            periods.push([start, end]);
+          }
+        }
+        // Invertim per tenir de més antic a més recent
+        periods.reverse();
+      }
+
+      return periods;
+    }
+
+    function calculateIncrements(periods, dataMap) {
+      return periods.map(([start, end]) => {
+        const startValue = dataMap[start];
+        const endValue = dataMap[end];
+        if (startValue !== undefined && endValue !== undefined && startValue !== 0) {
+          return ((endValue - startValue) / startValue) * 100;
+        } else {
+          return null;
+        }
+      });
+    }
+
+    async function updateChart(range, tipusRang, chartType) {
+      const dataMap = await fetchData();
+      const periods = getPeriods(dataMap, range, tipusRang);
+      const increments = calculateIncrements(periods, dataMap);
+      const labels = periods.map(([start, end]) => `${start} - ${end}`);
+
+      const ctx = document.getElementById('incrementChart').getContext('2d');
+
+      if (chart) {
+        chart.destroy();
+      }
+
+      chart = new Chart(ctx, {
+        type: chartType,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: `% Increment recollida selectiva`,
+            data: increments,
+            backgroundColor: chartType === 'bar' ? '#388E3C' : 'rgba(56, 142, 60, 0.5)',
+            borderColor: '#2E7D32',
+            borderWidth: 2,
+            fill: chartType === 'line',
+            tension: 0.3,
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Increment percentual per períodes de ${range} anys (${tipusRang})`
+            },
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => ctx.parsed.y !== null ? ctx.parsed.y.toFixed(2) + '%' : 'Dada no disponible'
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: '% Increment'
+              },
+              beginAtZero: false
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Període de temps'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function refreshChart() {
+      const range = parseInt(document.getElementById("periodeSelect").value);
+      const tipusRang = document.getElementById("tipusRangSelect").value;
+      const chartType = document.getElementById("chartTypeSelect").value;
+      updateChart(range, tipusRang, chartType);
+    }
+
+    document.getElementById("periodeSelect").addEventListener("change", refreshChart);
+    document.getElementById("tipusRangSelect").addEventListener("change", refreshChart);
+    document.getElementById("chartTypeSelect").addEventListener("change", refreshChart);
+
+    // Inicialització
+    refreshChart();
+  </script>
+</body>
+</html>
