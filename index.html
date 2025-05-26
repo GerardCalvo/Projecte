@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gràfics interactius amb ampliació</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .chart-box {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 10px;
+      height: 400px;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .chart-title {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      padding: 0;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .fullscreen iframe {
+      border-radius: 0;
+    }
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .fullscreen-btn:hover {
+      background-color: rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Gràfics Interactius</h1>
+
+  <div class="grid-container">
+    <!-- Repetim 8 vegades -->
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic1/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 1</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic2/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 2</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic3/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 3</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic4/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 4</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic5/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 5</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic6/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 6</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic7/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 7</div>
+    </div>
+
+    <div class="chart-box">
+      <button class="fullscreen-btn" onclick="goFullscreen(this)">🔍 Ampliar</button>
+      <iframe src="grafics/grafic8/index.html" allowfullscreen></iframe>
+      <div class="chart-title">Gràfic 8</div>
+    </div>
+  </div>
+
+  <script>
+    function goFullscreen(button) {
+      const container = button.closest(".chart-box");
+      container.classList.add("fullscreen");
+
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      } else if (container.msRequestFullscreen) {
+        container.msRequestFullscreen();
+      }
+
+      document.addEventListener("fullscreenchange", () => {
+        if (!document.fullscreenElement) {
+          container.classList.remove("fullscreen");
+        }
+      }, { once: true });
+    }
+  </script>
+
+</body>
+</html>

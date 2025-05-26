@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolució de Residus Municipals Catalunya</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .filters-panel {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .year-range {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .year-range span {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .population-range {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .population-range span {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(252, 182, 159, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-card .unit {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .info-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .info-panel p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .current-filters {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .current-filters h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .current-filters p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Evolució de Residus Municipals</h1>
+            <p>Generació de residus i recollida selectiva a Catalunya</p>
+        </div>
+        
+        <div class="content">
+            <div id="loading" class="loading">Carregant dades de l'API...</div>
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <div id="filters" class="filters-panel" style="display: none;">
+                <div class="filters-title">🔍 Filtres de Dades</div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="municipi-select">Municipi:</label>
+                        <select id="municipi-select">
+                            <option value="">Tots els municipis (mitjana)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Rang d'anys:</label>
+                        <div class="year-range">
+                            <input type="number" id="any-inici" min="1990" max="2030" placeholder="Any inici">
+                            <span>a</span>
+                            <input type="number" id="any-final" min="1990" max="2030" placeholder="Any final">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Rang de població:</label>
+                        <div class="population-range">
+                            <input type="number" id="poblacio-min" min="0" placeholder="Mínim habitants">
+                            <span>a</span>
+                            <input type="number" id="poblacio-max" min="0" placeholder="Màxim habitants">
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-primary" onclick="aplicarFiltres()">Aplicar Filtres</button>
+                    <button class="btn btn-secondary" onclick="resetFiltres()">Reiniciar</button>
+                </div>
+                <div id="current-filters" class="current-filters" style="display: none;">
+                    <h4>Filtres actius:</h4>
+                    <p id="filter-municipality"></p>
+                    <p id="filter-years"></p>
+                    <p id="filter-population"></p>
+                </div>
+            </div>
+            
+            <div id="stats" class="stats-grid" style="display: none;"></div>
+            
+            <div id="info" class="info-panel" style="display: none;">
+                <h3>ℹ️ Informació sobre les dades</h3>
+                <p><strong>Font:</strong> Transparència Catalunya - Estadístiques de residus municipals</p>
+                <p><strong>Dades:</strong> <span id="data-description"></span></p>
+                <p><strong>Període:</strong> <span id="periode"></span></p>
+                <p><strong>Municipis analitzats:</strong> <span id="municipis"></span></p>
+            </div>
+            
+            <div id="chart-container" class="chart-container" style="display: none;">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        let dadesOriginais = [];
+        let municipisList = [];
+
+        async function carregarDades() {
+            try {
+                const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    throw new Error('No s\'han rebut dades de l\'API');
+                }
+                
+                console.log(`Dades carregades: ${data.length} registres`);
+                
+                // Processar i emmagatzemar dades originales
+                dadesOriginais = data.map(row => ({
+                    any: parseInt(row.any),
+                    municipi: row.municipi,
+                    comarca: row.comarca,
+                    poblacio: parseFloat(row.poblaci) || 0,
+                    kgHabAny: parseFloat(row.kg_hab_any) || 0,
+                    kgHabAnySelectiva: parseFloat(row.kg_hab_any_recollida_selectiva) || 0,
+                    percentatgeSelectiva: parseFloat(row.r_s_r_m_total) || 0,
+                    totalSelectiva: parseFloat(row.total_recollida_selectiva) || 0,
+                    resta: parseFloat(row.suma_fracci_resta) || 0
+                })).filter(row => !isNaN(row.any) && row.any > 1990 && row.any < 2030);
+
+                // Crear lista de municipis únics
+                municipisList = [...new Set(dadesOriginais.map(d => d.municipi))].sort();
+                
+                inicialitzarFiltres();
+                processarDades(dadesOriginais);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('filters').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error carregant dades:', error);
+                mostrarError(`Error carregant les dades: ${error.message}`);
+            }
+        }
+
+        function inicialitzarFiltres() {
+            // Omplir select de municipis
+            const municipiSelect = document.getElementById('municipi-select');
+            municipisList.forEach(municipi => {
+                const option = document.createElement('option');
+                option.value = municipi;
+                option.textContent = municipi;
+                municipiSelect.appendChild(option);
+            });
+
+            // Establir rangs d'anys per defecte
+            const anys = [...new Set(dadesOriginais.map(d => d.any))].sort();
+            document.getElementById('any-inici').value = Math.min(...anys);
+            document.getElementById('any-final').value = Math.max(...anys);
+
+            // Establir rangs de població per defecte (basat en les dades disponibles)
+            const poblacions = dadesOriginais.map(d => d.poblacio).filter(p => p > 0);
+            document.getElementById('poblacio-min').placeholder = `Mínim (${Math.min(...poblacions).toFixed(0)})`;
+            document.getElementById('poblacio-max').placeholder = `Màxim (${Math.max(...poblacions).toFixed(0)})`;
+        }
+
+        function aplicarFiltres() {
+            const municipiSeleccionat = document.getElementById('municipi-select').value;
+            const anyInici = parseInt(document.getElementById('any-inici').value);
+            const anyFinal = parseInt(document.getElementById('any-final').value);
+            const poblacioMin = parseFloat(document.getElementById('poblacio-min').value);
+            const poblacioMax = parseFloat(document.getElementById('poblacio-max').value);
+
+            // Validar rangs d'anys
+            if (anyInici && anyFinal && anyInici > anyFinal) {
+                alert('L\'any d\'inici no pot ser posterior a l\'any final');
+                return;
+            }
+
+            // Validar rang de població
+            if (poblacioMin && poblacioMax && poblacioMin > poblacioMax) {
+                alert('La població mínima no pot ser superior a la màxima');
+                return;
+            }
+
+            // Filtrar dades
+            let dadesFiltrades = dadesOriginais;
+
+            if (municipiSeleccionat) {
+                dadesFiltrades = dadesFiltrades.filter(d => d.municipi === municipiSeleccionat);
+            }
+
+            if (anyInici) {
+                dadesFiltrades = dadesFiltrades.filter(d => d.any >= anyInici);
+            }
+
+            if (anyFinal) {
+                dadesFiltrades = dadesFiltrades.filter(d => d.any <= anyFinal);
+            }
+
+            // Aplicar filtre de població
+            if (poblacioMin) {
+                dadesFiltrades = dadesFiltrades.filter(d => d.poblacio >= poblacioMin);
+            }
+
+            if (poblacioMax) {
+                dadesFiltrades = dadesFiltrades.filter(d => d.poblacio <= poblacioMax);
+            }
+
+            if (dadesFiltrades.length === 0) {
+                mostrarError('No hi ha dades que coincideixin amb els filtres seleccionats');
+                return;
+            }
+
+            // Mostrar filtres actius
+            mostrarFiltresActius(municipiSeleccionat, anyInici, anyFinal, poblacioMin, poblacioMax);
+
+            // Processar dades filtrades
+            processarDades(dadesFiltrades, municipiSeleccionat);
+        }
+
+        function resetFiltres() {
+            document.getElementById('municipi-select').value = '';
+            const anys = [...new Set(dadesOriginais.map(d => d.any))].sort();
+            document.getElementById('any-inici').value = Math.min(...anys);
+            document.getElementById('any-final').value = Math.max(...anys);
+            document.getElementById('poblacio-min').value = '';
+            document.getElementById('poblacio-max').value = '';
+            document.getElementById('current-filters').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            processarDades(dadesOriginais);
+        }
+
+        function mostrarFiltresActius(municipi, anyInici, anyFinal, poblacioMin, poblacioMax) {
+            const currentFilters = document.getElementById('current-filters');
+            const filterMunicipality = document.getElementById('filter-municipality');
+            const filterYears = document.getElementById('filter-years');
+            const filterPopulation = document.getElementById('filter-population');
+
+            filterMunicipality.textContent = municipi ? 
+                `Municipi: ${municipi}` : 'Municipi: Tots (mitjana catalana)';
+            
+            filterYears.textContent = `Anys: ${anyInici || 'Tots'} - ${anyFinal || 'Tots'}`;
+            
+            let populationText = 'Població: Tots';
+            if (poblacioMin && poblacioMax) {
+                populationText = `Població: ${poblacioMin.toLocaleString()} - ${poblacioMax.toLocaleString()} habitants`;
+            } else if (poblacioMin) {
+                populationText = `Població: Mínim ${poblacioMin.toLocaleString()} habitants`;
+            } else if (poblacioMax) {
+                populationText = `Població: Màxim ${poblacioMax.toLocaleString()} habitants`;
+            }
+            filterPopulation.textContent = populationText;
+            
+            currentFilters.style.display = 'block';
+        }
+
+        function processarDades(dades, municipiSeleccionat = null) {
+            try {
+                if (dades.length === 0) {
+                    throw new Error('No hi ha dades vàlides després del processament');
+                }
+
+                console.log(`Dades processades: ${dades.length} registres vàlids`);
+
+                let evolucioMitjana;
+
+                if (municipiSeleccionat) {
+                    // Mostrar dades d'un municipi específic
+                    evolucioMitjana = dades
+                        .filter(row => row.municipi === municipiSeleccionat && row.kgHabAny > 0)
+                        .map(row => ({
+                            any: row.any,
+                            kgHabAny: row.kgHabAny,
+                            kgHabAnySelectiva: row.kgHabAnySelectiva,
+                            percentatgeSelectiva: row.percentatgeSelectiva,
+                            poblacioTotal: row.poblacio,
+                            numMunicipis: 1
+                        }))
+                        .sort((a, b) => a.any - b.any);
+                } else {
+                    // Calcular mitjanes anuals de tots els municipis
+                    const mitjanesPorAny = {};
+                    
+                    dades.forEach(row => {
+                        if (!mitjanesPorAny[row.any]) {
+                            mitjanesPorAny[row.any] = {
+                                kgHabAny: [],
+                                kgHabAnySelectiva: [],
+                                percentatgeSelectiva: [],
+                                poblacioTotal: 0,
+                                municipis: new Set()
+                            };
+                        }
+                        
+                        if (row.kgHabAny > 0) mitjanesPorAny[row.any].kgHabAny.push(row.kgHabAny);
+                        if (row.kgHabAnySelectiva > 0) mitjanesPorAny[row.any].kgHabAnySelectiva.push(row.kgHabAnySelectiva);
+                        if (row.percentatgeSelectiva > 0) mitjanesPorAny[row.any].percentatgeSelectiva.push(row.percentatgeSelectiva);
+                        mitjanesPorAny[row.any].poblacioTotal += row.poblacio;
+                        mitjanesPorAny[row.any].municipis.add(row.municipi);
+                    });
+
+                    // Calcular mitjanes reals
+                    evolucioMitjana = Object.keys(mitjanesPorAny)
+                        .map(any => parseInt(any))
+                        .sort((a, b) => a - b)
+                        .map(any => {
+                            const dadesMitjanes = mitjanesPorAny[any];
+                            return {
+                                any: any,
+                                kgHabAny: dadesMitjanes.kgHabAny.length > 0 ? 
+                                    dadesMitjanes.kgHabAny.reduce((a, b) => a + b, 0) / dadesMitjanes.kgHabAny.length : 0,
+                                kgHabAnySelectiva: dadesMitjanes.kgHabAnySelectiva.length > 0 ? 
+                                    dadesMitjanes.kgHabAnySelectiva.reduce((a, b) => a + b, 0) / dadesMitjanes.kgHabAnySelectiva.length : 0,
+                                percentatgeSelectiva: dadesMitjanes.percentatgeSelectiva.length > 0 ? 
+                                    dadesMitjanes.percentatgeSelectiva.reduce((a, b) => a + b, 0) / dadesMitjanes.percentatgeSelectiva.length : 0,
+                                poblacioTotal: dadesMitjanes.poblacioTotal,
+                                numMunicipis: dadesMitjanes.municipis.size
+                            };
+                        })
+                        .filter(row => row.kgHabAny > 0);
+                }
+
+                if (evolucioMitjana.length === 0) {
+                    throw new Error('No s\'han pogut calcular mitjanes vàlides');
+                }
+
+                console.log('Evolució calculada:', evolucioMitjana);
+                mostrarEstadistiques(evolucioMitjana, dades, municipiSeleccionat);
+                crearGrafic(evolucioMitjana, municipiSeleccionat);
+                
+            } catch (error) {
+                console.error('Error processant dades:', error);
+                mostrarError(`Error processant les dades: ${error.message}`);
+            }
+        }
+
+        function mostrarEstadistiques(evolucio, dadesOriginalsFiltered, municipiSeleccionat) {
+            const ultimAny = evolucio[evolucio.length - 1];
+            const primerAny = evolucio[0];
+            const totalMunicipis = municipiSeleccionat ? 1 : [...new Set(dadesOriginalsFiltered.map(d => d.municipi))].length;
+            
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>Total Residus ${ultimAny.any}</h3>
+                    <div class="value">${ultimAny.kgHabAny.toFixed(0)}</div>
+                    <div class="unit">kg/hab/any</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Recollida Selectiva ${ultimAny.any}</h3>
+                    <div class="value">${ultimAny.kgHabAnySelectiva.toFixed(0)}</div>
+                    <div class="unit">kg/hab/any</div>
+                </div>
+                <div class="stat-card">
+                    <h3>% Selectiva ${ultimAny.any}</h3>
+                    <div class="value">${ultimAny.percentatgeSelectiva.toFixed(1)}</div>
+                    <div class="unit">%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Evolució Total</h3>
+                    <div class="value">${((ultimAny.kgHabAny - primerAny.kgHabAny) / primerAny.kgHabAny * 100).toFixed(1)}</div>
+                    <div class="unit">% canvi</div>
+                </div>
+            `;
+            
+            document.getElementById('stats').innerHTML = statsHtml;
+            document.getElementById('stats').style.display = 'grid';
+            
+            document.getElementById('periode').textContent = `${primerAny.any} - ${ultimAny.any}`;
+            document.getElementById('municipis').textContent = totalMunicipis;
+            
+            const dataDescription = municipiSeleccionat ? 
+                `Dades específiques del municipi de ${municipiSeleccionat}` :
+                'Mitjanes anuals per càpita de tots els municipis catalans';
+            document.getElementById('data-description').textContent = dataDescription;
+            
+            document.getElementById('info').style.display = 'block';
+        }
+
+        function crearGrafic(dades, municipiSeleccionat) {
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const titleText = municipiSeleccionat ? 
+                `Evolució de residus - ${municipiSeleccionat}` :
+                'Evolució de la generació de residus i recollida selectiva (mitjana anual)';
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dades.map(d => d.any),
+                    datasets: [
+                        {
+                            label: 'Total residus (kg/hab/any)',
+                            data: dades.map(d => d.kgHabAny),
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Recollida selectiva (kg/hab/any)',
+                            data: dades.map(d => d.kgHabAnySelectiva),
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '% Recollida selectiva',
+                            data: dades.map(d => d.percentatgeSelectiva),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            borderDash: [5, 5],
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: titleText,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: 20
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Any',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Kg per càpita',
+                                color: '#e74c3c',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(231, 76, 60, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e74c3c'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '% Recollida selectiva',
+                                color: '#3498db',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                color: 'rgba(52, 152, 219, 0.1)'
+                            },
+                            ticks: {
+                                color: '#3498db'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+            
+            document.getElementById('chart-container').style.display = 'block';
+        }
+
+        function mostrarError(missatge) {
+            document.getElementById('error').textContent = missatge;
+            document.getElementById('error').style.display = 'block';
+        }
+
+        // Inicialitzar l'aplicació
+        window.addEventListener('load', carregarDades);
+    </script>
+</body>
+</html>

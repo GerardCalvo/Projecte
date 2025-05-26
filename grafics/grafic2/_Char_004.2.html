@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Residus Catalunya Interactiu</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      margin-bottom: 30px;
+    }
+    select, input[type="number"] {
+      padding: 5px;
+      font-size: 14px;
+    }
+    #chart-container {
+      max-width: 1000px;
+      height: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .checkboxes {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Evolució de la generació de residus i recollida selectiva</h2>
+
+  <div id="controls">
+    <select id="provinciaSelect">
+      <option value="">Totes les províncies</option>
+    </select>
+    <select id="comarcaSelect">
+      <option value="">Totes les comarques</option>
+    </select>
+    <input type="number" id="minAny" placeholder="Any inicial" min="2000" />
+    <input type="number" id="maxAny" placeholder="Any final" min="2000" />
+    <input type="number" id="minHabitants" placeholder="Mín habitants" />
+    <input type="number" id="maxHabitants" placeholder="Màx habitants" />
+  </div>
+
+  <div class="checkboxes">
+    <label><input type="checkbox" id="toggleTotal" checked /> Total residus</label>
+    <label><input type="checkbox" id="toggleSelectiva" checked /> Recollida selectiva</label>
+    <label><input type="checkbox" id="togglePercent" checked /> % Recollida selectiva</label>
+  </div>
+
+  <div id="chart-container">
+    <canvas id="residusChart"></canvas>
+  </div>
+
+  <script>
+    let originalData = [];
+    let chart;
+
+    async function fetchData() {
+      const url = "https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000";
+      const response = await fetch(url);
+      const data = await response.json();
+      originalData = data;
+      populateFilters(data);
+      updateChart();
+    }
+
+    function populateFilters(data) {
+      const provincies = [...new Set(data.map(d => d.provincia).filter(Boolean))].sort();
+      const provinciaSelect = document.getElementById("provinciaSelect");
+      provincies.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        provinciaSelect.appendChild(opt);
+      });
+
+      provinciaSelect.addEventListener("change", () => {
+        const selectedProv = provinciaSelect.value;
+        const comarques = [...new Set(
+          originalData
+            .filter(d => !selectedProv || d.provincia === selectedProv)
+            .map(d => d.comarca).filter(Boolean)
+        )].sort();
+        const comarcaSelect = document.getElementById("comarcaSelect");
+        comarcaSelect.innerHTML = '<option value="">Totes les comarques</option>';
+        comarques.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          comarcaSelect.appendChild(opt);
+        });
+        updateChart();
+      });
+
+      document.getElementById("comarcaSelect").addEventListener("change", updateChart);
+      document.getElementById("minAny").addEventListener("input", updateChart);
+      document.getElementById("maxAny").addEventListener("input", updateChart);
+      document.getElementById("minHabitants").addEventListener("input", updateChart);
+      document.getElementById("maxHabitants").addEventListener("input", updateChart);
+
+      document.getElementById("toggleTotal").addEventListener("change", updateChart);
+      document.getElementById("toggleSelectiva").addEventListener("change", updateChart);
+      document.getElementById("togglePercent").addEventListener("change", updateChart);
+    }
+
+    function updateChart() {
+      const provincia = document.getElementById("provinciaSelect").value;
+      const comarca = document.getElementById("comarcaSelect").value;
+      const minAny = parseInt(document.getElementById("minAny").value);
+      const maxAny = parseInt(document.getElementById("maxAny").value);
+      const minHab = parseInt(document.getElementById("minHabitants").value);
+      const maxHab = parseInt(document.getElementById("maxHabitants").value);
+
+      const filtered = originalData.filter(row => {
+        const any = parseInt(row.any);
+        const poblacio = parseInt(row.poblaci);
+        return (!provincia || row.provincia === provincia) &&
+               (!comarca || row.comarca === comarca) &&
+               (!minAny || any >= minAny) &&
+               (!maxAny || any <= maxAny) &&
+               (!minHab || poblacio >= minHab) &&
+               (!maxHab || poblacio <= maxHab);
+      });
+
+      const agrupat = {};
+
+      filtered.forEach(row => {
+        const any = row.any;
+        const total = parseFloat(row.kg_hab_any) || 0;
+        const selectiva = parseFloat(row.kg_hab_any_recollida_selectiva) || 0;
+        const percent = parseFloat(row.r_s_r_m_total) || 0;
+
+        if (!agrupat[any]) agrupat[any] = { total: [], selectiva: [], percent: [] };
+
+        agrupat[any].total.push(total);
+        agrupat[any].selectiva.push(selectiva);
+        agrupat[any].percent.push(percent);
+      });
+
+      const anys = Object.keys(agrupat).sort();
+      const totals = anys.map(a => average(agrupat[a].total));
+      const selectives = anys.map(a => average(agrupat[a].selectiva));
+      const percents = anys.map(a => average(agrupat[a].percent));
+
+      renderChart(anys, totals, selectives, percents);
+    }
+
+    function average(arr) {
+      return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    }
+
+    function renderChart(labels, totals, selectives, percents) {
+      if (chart) chart.destroy();
+      const ctx = document.getElementById('residusChart').getContext('2d');
+
+      const datasets = [];
+
+      if (document.getElementById("toggleTotal").checked) {
+        datasets.push({
+          label: 'Total residus (kg/hab/any)',
+          data: totals,
+          borderColor: 'red',
+          tension: 0.3
+        });
+      }
+
+      if (document.getElementById("toggleSelectiva").checked) {
+        datasets.push({
+          label: 'Recollida selectiva (kg/hab/any)',
+          data: selectives,
+          borderColor: 'green',
+          tension: 0.3
+        });
+      }
+
+      if (document.getElementById("togglePercent").checked) {
+        datasets.push({
+          label: '% Recollida selectiva (R.S. / R.M.)',
+          data: percents,
+          borderColor: 'blue',
+          borderDash: [5, 5],
+          yAxisID: 'y1',
+          tension: 0.3
+        });
+      }
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          stacked: false,
+          scales: {
+            y: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'Kg per càpita' }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: '% Recollida selectiva' },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>

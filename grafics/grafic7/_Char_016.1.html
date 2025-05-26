@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODS 11 - Recollida Selectiva de Residus Catalunya</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .current { color: #2ecc71; }
+        .target { color: #e74c3c; }
+        .projection { color: #f39c12; }
+
+        .chart-container {
+            padding: 30px;
+            height: 600px;
+            position: relative;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .retry-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .retry-btn:hover {
+            background: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .chart-container {
+                height: 400px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ODS 11 - Recollida Selectiva de Residus</h1>
+            <p>Indicador 11.6.1 - Catalunya vs Objectius UE</p>
+        </div>
+
+        <div id="debugInfo" class="debug-info" style="display: none;">
+            <strong>Debug Info:</strong><br>
+            <span id="debugText">Iniciant...</span>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="yearFilter">Any</label>
+                <select id="yearFilter">
+                    <option value="all">Tots els anys</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="municipiFilter">Municipi</label>
+                <select id="municipiFilter">
+                    <option value="all">Catalunya (mitjana)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value current" id="currentValue">--</div>
+                <div class="stat-label">Recollida Selectiva Actual (%)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value target" id="targetValue">--</div>
+                <div class="stat-label">Objectiu UE Proper (%)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value projection" id="projectionValue">--</div>
+                <div class="stat-label">Projecció 2035 (%)</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="mainChart"></canvas>
+            <div class="loading" id="loadingMsg">
+                Carregant dades de l'API...
+                <button class="retry-btn" onclick="init()" style="display: block; margin: 20px auto;">Recarregar</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2ecc71;"></div>
+                <span>Catalunya (Real)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db;"></div>
+                <span>Catalunya (Projecció)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e74c3c;"></div>
+                <span>Objectius UE</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rawData = [];
+        let chart = null;
+        const euTargets = {
+            2020: 50,
+            2025: 55,
+            2030: 60,
+            2035: 65
+        };
+
+        function debug(message) {
+            console.log(message);
+            const debugEl = document.getElementById('debugText');
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugEl && debugInfo) {
+                debugEl.innerHTML += '<br>' + new Date().toLocaleTimeString() + ': ' + message;
+                debugInfo.style.display = 'block';
+            }
+        }
+
+        async function init() {
+            debug('Iniciant aplicació...');
+            
+            // Esperar que Chart.js es carregui
+            if (typeof Chart === 'undefined') {
+                debug('Esperant que Chart.js es carregui...');
+                setTimeout(init, 500);
+                return;
+            }
+            
+            debug('Chart.js carregat correctament');
+            
+            try {
+                // Primer intentem amb dades de mostra si l'API falla
+                await loadData();
+                populateFilters();
+                updateChart();
+                updateStats();
+                debug('Aplicació carregada correctament!');
+            } catch (error) {
+                debug('Error: ' + error.message);
+                console.error('Error detallat:', error);
+                
+                // Usar dades de mostra
+                debug('Carregant dades de mostra...');
+                loadSampleData();
+                populateFilters();
+                updateChart();
+                updateStats();
+            }
+        }
+
+        async function loadData() {
+            debug('Contactant amb l\'API...');
+            
+            // Prova diferents URLs
+            const urls = [
+                'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000',
+                //'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=500',
+                //'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=100'
+            ];
+
+            for (let i = 0; i < urls.length; i++) {
+                try {
+                    debug(`Provant URL ${i + 1}/${urls.length}...`);
+                    const response = await fetch(urls[i]);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    debug(`Dades rebudes: ${data.length} registres`);
+                    
+                    if (data.length === 0) {
+                        throw new Error('No s\'han rebut dades de l\'API');
+                    }
+                    
+                    rawData = data;
+                    document.getElementById('loadingMsg').style.display = 'none';
+                    return;
+                    
+                } catch (error) {
+                    debug(`Error amb URL ${i + 1}: ${error.message}`);
+                    if (i === urls.length - 1) {
+                        throw error;
+                    }
+                }
+            }
+        }
+
+        function loadSampleData() {
+            // Dades de mostra basades en l'estructura real
+            rawData = [
+                {
+                    "any": "2018",
+                    "municipi": "Barcelona",
+                    "comarca": "Barcelonès",
+                    "r_s_r_m_total": "35.2"
+                },
+                {
+                    "any": "2019",
+                    "municipi": "Barcelona", 
+                    "comarca": "Barcelonès",
+                    "r_s_r_m_total": "37.8"
+                },
+                {
+                    "any": "2020",
+                    "municipi": "Barcelona",
+                    "comarca": "Barcelonès", 
+                    "r_s_r_m_total": "40.1"
+                },
+                {
+                    "any": "2021",
+                    "municipi": "Barcelona",
+                    "comarca": "Barcelonès",
+                    "r_s_r_m_total": "42.5"
+                },
+                {
+                    "any": "2022",
+                    "municipi": "Barcelona",
+                    "comarca": "Barcelonès",
+                    "r_s_r_m_total": "44.2"
+                },
+                {
+                    "any": "2023",
+                    "municipi": "Barcelona",
+                    "comarca": "Barcelonès",
+                    "r_s_r_m_total": "46.8"
+                },
+                {
+                    "any": "2018",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "38.1"
+                },
+                {
+                    "any": "2019",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "40.3"
+                },
+                {
+                    "any": "2020",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "42.8"
+                },
+                {
+                    "any": "2021",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "45.1"
+                },
+                {
+                    "any": "2022",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "47.5"
+                },
+                {
+                    "any": "2023",
+                    "municipi": "Girona",
+                    "comarca": "Gironès",
+                    "r_s_r_m_total": "49.2"
+                }
+            ];
+            
+            debug(`Dades de mostra carregades: ${rawData.length} registres`);
+            document.getElementById('loadingMsg').style.display = 'none';
+        }
+
+        function populateFilters() {
+            debug('Omplint filtres...');
+            
+            const years = [...new Set(rawData.map(d => d.any))].sort();
+            const municipis = [...new Set(rawData.map(d => d.municipi))].sort();
+
+            debug(`Anys disponibles: ${years.join(', ')}`);
+            debug(`Municipis disponibles: ${municipis.join(', ')}`);
+
+            const yearSelect = document.getElementById('yearFilter');
+            const municipiSelect = document.getElementById('municipiFilter');
+
+            // Netejar opcions existents (excepte la primera)
+            yearSelect.innerHTML = '<option value="all">Tots els anys</option>';
+            municipiSelect.innerHTML = '<option value="all">Catalunya (mitjana)</option>';
+
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+
+            municipis.forEach(municipi => {
+                const option = document.createElement('option');
+                option.value = municipi;
+                option.textContent = municipi;
+                municipiSelect.appendChild(option);
+            });
+        }
+
+        function calculateProjections(data) {
+            if (data.length < 2) return [];
+            
+            const points = data.map(d => ({
+                x: parseInt(d.any),
+                y: parseFloat(d.r_s_r_m_total || 0)
+            })).filter(p => !isNaN(p.x) && !isNaN(p.y)).sort((a, b) => a.x - b.x);
+
+            if (points.length < 2) return [];
+
+            // Regressió lineal simple
+            const n = points.length;
+            const sumX = points.reduce((sum, p) => sum + p.x, 0);
+            const sumY = points.reduce((sum, p) => sum + p.y, 0);
+            const sumXY = points.reduce((sum, p) => sum + (p.x * p.y), 0);
+            const sumXX = points.reduce((sum, p) => sum + (p.x * p.x), 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            debug(`Regressió: pendent=${slope.toFixed(3)}, intercepció=${intercept.toFixed(3)}`);
+
+            const projections = [];
+            const lastYear = Math.max(...points.map(p => p.x));
+            
+            for (let year = lastYear + 1; year <= 2035; year++) {
+                const projectedValue = Math.max(0, Math.min(100, slope * year + intercept));
+                projections.push({
+                    any: year.toString(),
+                    r_s_r_m_total: projectedValue.toFixed(2),
+                    isProjection: true
+                });
+            }
+
+            return projections;
+        }
+
+        function getFilteredData() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const municipiFilter = document.getElementById('municipiFilter').value;
+
+            let filtered = rawData;
+
+            if (yearFilter !== 'all') {
+                filtered = filtered.filter(d => d.any === yearFilter);
+            }
+
+            if (municipiFilter !== 'all') {
+                filtered = filtered.filter(d => d.municipi === municipiFilter);
+            } else {
+                // Calcular mitjana per Catalunya
+                const yearlyData = {};
+                rawData.forEach(d => {
+                    if (!yearlyData[d.any]) {
+                        yearlyData[d.any] = [];
+                    }
+                    const value = parseFloat(d.r_s_r_m_total || 0);
+                    if (!isNaN(value)) {
+                        yearlyData[d.any].push(value);
+                    }
+                });
+
+                filtered = Object.keys(yearlyData).map(year => ({
+                    any: year,
+                    municipi: 'Catalunya',
+                    r_s_r_m_total: (yearlyData[year].reduce((a, b) => a + b, 0) / yearlyData[year].length).toFixed(2)
+                }));
+            }
+
+            debug(`Dades filtrades: ${filtered.length} registres`);
+            return filtered;
+        }
+
+        function updateChart() {
+            debug('Actualitzant gràfic...');
+            
+            // Verificar que Chart.js està disponible
+            if (typeof Chart === 'undefined') {
+                debug('Error: Chart.js no està disponible');
+                return;
+            }
+            
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            const filteredData = getFilteredData();
+            
+            filteredData.sort((a, b) => parseInt(a.any) - parseInt(b.any));
+
+            const projections = calculateProjections(filteredData);
+            const allData = [...filteredData, ...projections];
+
+            const years = allData.map(d => d.any);
+            const realValues = filteredData.map(d => parseFloat(d.r_s_r_m_total || 0));
+            const projectedValues = projections.map(d => parseFloat(d.r_s_r_m_total || 0));
+            
+            const realData = [...realValues, ...new Array(projections.length).fill(null)];
+            const projectedData = [...new Array(Math.max(0, filteredData.length - 1)).fill(null), 
+                                   realValues[realValues.length - 1], ...projectedValues];
+
+            const euData = years.map(year => euTargets[year] || null);
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Catalunya (Real)',
+                            data: realData,
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.2,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#2ecc71'
+                        },
+                        {
+                            label: 'Catalunya (Projecció)',
+                            data: projectedData,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            borderDash: [10, 5],
+                            fill: false,
+                            tension: 0.2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#3498db'
+                        },
+                        {
+                            label: 'Objectius UE',
+                            data: euData,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 8,
+                            pointBackgroundColor: '#e74c3c',
+                            pointStyle: 'rectRot'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evolució de la Recollida Selectiva de Residus (%)',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: 20
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentatge de Recollida Selectiva (%)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Any',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+            
+            debug('Gràfic creat correctament');
+        }
+
+        function updateStats() {
+            const filteredData = getFilteredData();
+            const projections = calculateProjections(filteredData);
+            
+            const sortedData = filteredData.sort((a, b) => parseInt(b.any) - parseInt(a.any));
+            const currentValue = sortedData.length > 0 ? parseFloat(sortedData[0].r_s_r_m_total || 0) : 0;
+            
+            const currentYear = new Date().getFullYear();
+            let nextTarget = null;
+            for (const [year, target] of Object.entries(euTargets)) {
+                if (parseInt(year) >= currentYear) {
+                    nextTarget = target;
+                    break;
+                }
+            }
+            
+            const projection2035 = projections.find(p => p.any === '2035');
+            const projectionValue = projection2035 ? parseFloat(projection2035.r_s_r_m_total) : 0;
+            
+            document.getElementById('currentValue').textContent = currentValue.toFixed(1) + '%';
+            document.getElementById('targetValue').textContent = nextTarget ? nextTarget + '%' : '--';
+            document.getElementById('projectionValue').textContent = projectionValue.toFixed(1) + '%';
+            
+            debug(`Stats actualitzades: Actual=${currentValue.toFixed(1)}%, Objectiu=${nextTarget}%, Projecció=${projectionValue.toFixed(1)}%`);
+        }
+
+        // Event listeners
+        document.getElementById('yearFilter').addEventListener('change', () => {
+            updateChart();
+            updateStats();
+        });
+
+        document.getElementById('municipiFilter').addEventListener('change', () => {
+            updateChart();
+            updateStats();
+        });
+
+        // Inicialitzar quan es carregui la pàgina
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
