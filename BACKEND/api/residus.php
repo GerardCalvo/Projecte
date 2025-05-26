@@ -38,7 +38,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         header('Content-Type: application/json');
         echo json_encode($residus);
     } else {
-        $result = $db->query("SELECt * FROM dades_residus JOIN ");
+        $result = $db->query("SELECT 
+                dr.any,
+                m.codi_municipi,
+                m.nom AS municipi,
+                c.nom AS comarca,
+                dr.poblaci AS poblacio,
+                dr.autocompostatge AS autocompostatge,
+                dr.mat_ria_org_nica AS mat_ria_org_nica,
+                dr.poda_i_jardineria AS poda_i_jardineria,
+                dr.paper_i_cartr AS paper_i_cartr,
+                dr.vidre AS vidre,
+                dr.envasos_lleugers AS envasos_lleugers,
+                dr.residus_voluminosos_fusta AS residus_voluminosos_fusta,
+                dr.raee AS raee,
+                dr.ferralla AS ferralla,
+                dr.olis_vegetals AS olis_vegetals,
+                dr.t_xtil AS t_xtil,
+                dr.runes AS runes,
+                dr.res_especials_en_petites AS res_especials_en_petites,
+                dr.piles AS piles,
+                dr.medicaments AS medicaments,
+                dr.altres_recollides_selectives AS altres_recollides_selectives,
+                dr.total_recollida_selectiva AS total_recollida_selectiva,
+                dr.r_s_r_m_total AS r_s_r_m_total,
+                dr.kg_hab_any_recollida_selectiva AS kg_hab_any_recollida_selectiva,
+                dr.resta_a_dip_sit AS resta_a_dip_sit,
+                dr.resta_a_incineraci AS resta_a_incineraci,
+                dr.resta_a_tractament_mec_nic AS resta_a_tractament_mec_nic,
+                dr.resta_sense_desglossar AS resta_sense_desglossar,
+                dr.suma_fracci_resta AS suma_fracci_resta,
+                dr.f_r_r_m AS f_r_r_m,
+                dr.generaci_residus_municipal AS generaci_residus_municipal,
+                dr.kg_hab_dia AS kg_hab_dia,
+                dr.kg_hab_any AS kg_hab_any
+            FROM dades_residus dr
+            JOIN municipis m ON dr.municipi_id = m.id
+            JOIN comarques c ON dr.comarca_id = c.id
+            ORDER BY dr.any, c.nom, m.nom
+        ");
+        
         $residus = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $residus[] = $row;
