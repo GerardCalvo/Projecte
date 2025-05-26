@@ -1,6 +1,7 @@
 <?php
 include '../includes/errorHandler.proc.php';
 include '../includes/dbConnect.proc.php';
+ini_set('memory_limit', '512M');
 
 // Peticions GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -37,13 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         header('Content-Type: application/json');
         echo json_encode($residus);
+    } else if (isset($_GET['$select']) && isset($_GET['$group']) && isset($_GET['$order'])) {
+    $result = $db->query("SELECT any, AVG(r_s_r_m_total) AS avg_r_s_r_m_total FROM dades_residus GROUP BY any ORDER BY any");
+    $residusAnys = [];
+
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $formatted = [];
+        foreach ($row as $key => $value) {
+            $formatted[$key] = strval($value); // Convertim tot a text, sense modificar el valor
+        }
+        $residusAnys[] = $formatted;
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($residusAnys);
     } else {
         $result = $db->query("SELECT 
                 dr.any,
                 m.codi_municipi,
                 m.nom AS municipi,
                 c.nom AS comarca,
-                dr.poblaci AS poblacio,
+                dr.poblaci AS poblaci,
                 dr.autocompostatge AS autocompostatge,
                 dr.mat_ria_org_nica AS mat_ria_org_nica,
                 dr.poda_i_jardineria AS poda_i_jardineria,
@@ -75,16 +90,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             FROM dades_residus dr
             JOIN municipis m ON dr.municipi_id = m.id
             JOIN comarques c ON dr.comarca_id = c.id
-            ORDER BY dr.any, c.nom, m.nom
         ");
         
         $residus = [];
-        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            $residus[] = $row;
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $formatted = [];
+        foreach ($row as $key => $value) {
+            if (is_numeric($value)) {
+                // Camps que volem com enters en format string (sense decimals)
+                if (in_array($key, ['any', 'codi_municipi', 'poblaci'])) {
+                    $formatted[$key] = strval(intval($value));
+                } else {
+                    // Nombres reals en format text amb 2 decimals
+                    $formatted[$key] = number_format((float)$value, 2, '.', '');
+                }
+            } else {
+                $formatted[$key] = $value; // Per strings com "municipi", "comarca", etc.
+            }
         }
+        $residus[] = $formatted;
+    }
 
-        header('Content-Type: application/json');
-        echo json_encode($residus);
+    header('Content-Type: application/json');
+    echo json_encode($residus, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         /*$result = $db->query("
             SELECT
                 SUM(mat_ria_org_nica) AS materia_organica,

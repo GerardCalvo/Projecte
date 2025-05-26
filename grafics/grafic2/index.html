@@ -52,7 +52,7 @@
     let chart;
 
     async function fetchData() {
-      const response = await fetch("https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$select=any,avg(r_s_r_m_total)&$group=any&$order=any");
+      const response = await fetch("../../BACKEND/api/residus.php?$select=any,avg(r_s_r_m_total)&$group=any&$order=any");
       const data = await response.json();
 
       const dataMap = {};
