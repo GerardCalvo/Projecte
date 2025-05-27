@@ -5,40 +5,12 @@ ini_set('memory_limit', '512M');
 
 // Peticions GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (
-        isset($_GET['yearFrom']) &&
-        isset($_GET['yearTo']) &&
-        isset($_GET['minPop']) &&
-        isset($_GET['maxPop'])
-    ) {
-        $yearFrom = intval($_GET['yearFrom']);
-        $yearTo = intval($_GET['yearTo']);
-        $minPop = intval($_GET['minPop']);
-        $maxPop = intval($_GET['maxPop']);
-
-        $stmt = $db->prepare(
-            "SELECT any, poblacio, 
-                    kg_hab_any AS `Kg / hab / any`, 
-                    kg_hab_any_rec_selectiva AS `Kg/hab/any recollida selectiva`
-             FROM dades_residus
-             WHERE any BETWEEN :yearFrom AND :yearTo
-             AND poblacio BETWEEN :minPop AND :maxPop"
-        );
-        $stmt->bindValue(':yearFrom', $yearFrom, SQLITE3_INTEGER);
-        $stmt->bindValue(':yearTo', $yearTo, SQLITE3_INTEGER);
-        $stmt->bindValue(':minPop', $minPop, SQLITE3_INTEGER);
-        $stmt->bindValue(':maxPop', $maxPop, SQLITE3_INTEGER);
-
-        $result = $stmt->execute();
-
-        $residus = [];
-        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            $residus[] = $row;
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode($residus);
-    } else if (isset($_GET['$select']) && isset($_GET['$group']) && isset($_GET['$order'])) {
+    /**
+     * @author Gerard Calvo, Oriol Canellas, Agustí Lopez, Anthonella Orosco
+     * @since 27 / 05 / 2025
+     * @return $residusAnys Retorna la mitjana del r_s_r_m_total de cada any.
+     */
+    if (isset($_GET['$select']) && isset($_GET['$group']) && isset($_GET['$order'])) {
     $result = $db->query("SELECT any, AVG(r_s_r_m_total) AS avg_r_s_r_m_total FROM dades_residus GROUP BY any ORDER BY any");
     $residusAnys = [];
 
@@ -52,6 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     header('Content-Type: application/json');
     echo json_encode($residusAnys);
+    /**
+     * @author Gerard Calvo, Oriol Canellas, Agustí Lopez, Anthonella Orosco
+     * @since 27 / 05 / 2025
+     * @return $residus Retorna tota la informació dels residus de tots els municipis.
+     */
     } else {
         $result = $db->query("SELECT 
                 dr.any,
@@ -112,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
 
     header('Content-Type: application/json');
-    echo json_encode($residus, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    echo json_encode($residus);
         /*$result = $db->query("
             SELECT
                 SUM(mat_ria_org_nica) AS materia_organica,
