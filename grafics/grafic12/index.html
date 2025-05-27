@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribució per Ranges de Recollida Selectiva</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+    position: relative;
+    height: 400px; /* o el valor que vulguis */
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="main-title">
+                    <span class="title-icon">📊</span>
+                    Distribució per Ranges de Recollida Selectiva
+                </h1>
+                <p class="subtitle">Municipis agrupats per percentatge de recollida selectiva</p>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregant dades...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error hidden">
+            <div class="error-content">
+                <h3>Error en carregar les dades</h3>
+                <p id="error-message"></p>
+                <button onclick="loadData()" class="retry-btn">Tornar a intentar</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content hidden">
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="year-filter">Any:</label>
+                        <select id="year-filter">
+                            <option value="all">Tots els anys</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
+                </div>
+            </section>
+
+            <!-- Chart -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 id="distribution-title">📊 Distribució per Ranges de Recollida Selectiva</h3>
+                        <p>Municipis agrupats per percentatge de recollida selectiva</p>
+                    </div>
+                    <canvas id="distribution-chart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let allData = [];
+        let distributionChart;
+
+        // Chart color palette
+        const COLORS = {
+            primary: '#2d7d32',
+            secondary: '#4caf50',
+            warning: '#ff9800',
+            critical: '#f44336',
+            neutral: '#6c757d'
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('apply-filters').addEventListener('click', applyFilters);
+            document.getElementById('year-filter').addEventListener('change', applyFilters);
+        }
+
+        // Load data from API
+        async function loadData() {
+            try {
+                showLoading();
+                
+                const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    throw new Error('No s\'han trobat dades a l\'API');
+                }
+                
+                allData = processData(data);
+                
+                populateFilters();
+                createDistributionChart();
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError(error.message);
+            }
+        }
+
+        // Process raw data from API
+        function processData(rawData) {
+            return rawData.map(item => ({
+                year: parseInt(item.any),
+                municipalityCode: item.codi_municipi,
+                municipality: item.municipi,
+                comarca: item.comarca,
+                population: parseInt(item.poblaci) || 0,
+                selectiveCollection: parseFloat(item.r_s_r_m_total) || 0,
+                nonSelectivePercentage: parseFloat(item.f_r_r_m) || 0,
+                totalWasteGeneration: parseFloat(item.generaci_residus_municipal) || 0,
+                kgPerHabitantYear: parseFloat(item.kg_hab_any) || 0,
+                organicMatter: parseFloat(item.mat_ria_org_nica) || 0,
+                paperCardboard: parseFloat(item.paper_i_cartr) || 0,
+                glass: parseFloat(item.vidre) || 0,
+                lightPackaging: parseFloat(item.envasos_lleugers) || 0,
+                bulkyWaste: parseFloat(item.residus_voluminosos_fusta) || 0,
+                textile: parseFloat(item.t_xtil) || 0,
+                oil: parseFloat(item.olis_vegetals) || 0
+            })).filter(item => 
+                item.year && item.municipality && !isNaN(item.selectiveCollection)
+            );
+        }
+
+        // Populate filter dropdowns
+        function populateFilters() {
+            const yearFilter = document.getElementById('year-filter');
+            
+            // Get unique years and sort them
+            const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a);
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            createDistributionChart();
+        }
+
+        // Create distribution chart
+        function createDistributionChart() {
+            const ctx = document.getElementById('distribution-chart').getContext('2d');
+            
+            if (distributionChart) {
+                distributionChart.destroy();
+            }
+            
+            // Get selected year from filter or use most recent year
+            const yearFilter = document.getElementById('year-filter').value;
+            let targetYear;
+            
+            if (yearFilter === 'all') {
+                // Use most recent year available
+                const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a);
+                targetYear = years[0];
+            } else {
+                targetYear = parseInt(yearFilter);
+            }
+            
+            // Get data for target year from all data
+            const yearData = allData.filter(item => item.year === targetYear);
+            
+            if (yearData.length === 0) {
+                ctx.font = '16px Inter';
+                ctx.fillStyle = COLORS.neutral;
+                ctx.textAlign = 'center';
+                ctx.fillText(`No hi ha dades per al ${targetYear}`, ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            // Update chart title
+            document.getElementById('distribution-title').textContent = `📊 Distribució per Ranges de Recollida Selectiva (${targetYear})`;
+            
+            // Create ranges
+            const ranges = [
+                { label: '0-25%', min: 0, max: 25, color: COLORS.critical },
+                { label: '25-40%', min: 25, max: 40, color: COLORS.warning },
+                { label: '40-50%', min: 40, max: 50, color: '#ffb74d' },
+                { label: '50-60%', min: 50, max: 60, color: COLORS.secondary },
+                { label: '60%+', min: 60, max: 100, color: COLORS.primary }
+            ];
+            
+            const counts = ranges.map(range => 
+                yearData.filter(item => 
+                    item.selectiveCollection >= range.min && item.selectiveCollection < range.max
+                ).length
+            );
+            
+            distributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ranges.map(r => r.label),
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: ranges.map(r => r.color),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = ((context.parsed / yearData.length) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} municipis (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility functions
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+    </script>
+</body>
+</html>
