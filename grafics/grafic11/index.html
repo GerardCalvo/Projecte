@@ -22,62 +22,51 @@ canvas#regional-chart {
     width: 100% !important;
 }
 
-
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1 class="main-title">
-                    <span class="title-icon">🏞️</span>
-                    Comparació per Comarques
-                </h1>
-                <p class="subtitle">Percentatge mitjà de recollida selectiva per comarca</p>
-            </div>
-        </header>
 
         <!-- Loading State -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Carregant dades...</p>
         </div>
 
-        <!-- Error State -->
-        <div id="error" class="error hidden">
-            <div class="error-content">
-                <h3>Error en carregar les dades</h3>
-                <p id="error-message"></p>
-                <button onclick="loadData()" class="retry-btn">Tornar a intentar</button>
-            </div>
-        </div>
 
         <!-- Main Content -->
         <main id="main-content" class="main-content hidden">
-            <!-- Filters -->
-            <section class="filters-section">
-                <div class="filters">
-                    <div class="filter-group">
-                        <label for="year-filter">Any:</label>
-                        <select id="year-filter">
-                            <option value="all">Tots els anys</option>
-                        </select>
-                    </div>
-                    <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
-                </div>
-            </section>
 
             <!-- Chart -->
             <section class="charts-section">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3 id="chart-title">🏞️ Comparació per Comarques</h3>
+                        <h1 id="chart-title">🏞️ Comparació per Comarques</h1>
                         <p id="chart-subtitle">Percentatge mitjà de recollida selectiva per comarca</p>
                     </div>
+                    <!-- Filters -->
+                <section class="filters-section">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="year-filter">Any:</label>
+                            <select id="year-filter">
+                                <option value="all">Tots els anys</option>
+                            </select>
+                        </div>
+                        <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
+                    </div>
+                </section>
+                <!-- Error State -->
+                <div id="error" class="error hidden">
+                    <div class="error-content">
+                        <p id="error-message"></p>
+                        <button onclick="loadData()" class="retry-btn">Tornar a intentar</button>
+                    </div>
+                </div>
+
                     <canvas id="regional-chart"></canvas>
                 </div>
-            </section>
+            </section>   
+            
         </main>
     </div>
 
