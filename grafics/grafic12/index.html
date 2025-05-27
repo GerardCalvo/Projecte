@@ -11,14 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
-    position: relative;
-    height: 400px; /* o el valor que vulguis */
-    max-width: 600px;
-    margin: 0 auto;
-}
-
+            position: relative;
+            height: 400px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
     </style>
-
 </head>
 <body>
     <div class="container">
@@ -44,7 +42,7 @@
             <div class="error-content">
                 <h3>Error en carregar les dades</h3>
                 <p id="error-message"></p>
-                <button onclick="loadData()" class="retry-btn">Tornar a intentar</button>
+                <button onclick="retryLoad()" class="retry-btn">Tornar a intentar</button>
             </div>
         </div>
 
@@ -77,11 +75,9 @@
     </div>
 
     <script>
-        // Global variables
         let allData = [];
         let distributionChart;
 
-        // Chart color palette
         const COLORS = {
             primary: '#2d7d32',
             secondary: '#4caf50',
@@ -90,48 +86,56 @@
             neutral: '#6c757d'
         };
 
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
             setupEventListeners();
+            loadData(); // Load initial data with no year filter
         });
 
-        // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('apply-filters').addEventListener('click', applyFilters);
-            document.getElementById('year-filter').addEventListener('change', applyFilters);
+            document.getElementById('apply-filters').addEventListener('click', () => {
+                const selectedYear = document.getElementById('year-filter').value;
+                loadData(selectedYear);
+            });
+
+            document.getElementById('year-filter').addEventListener('change', () => {
+                const selectedYear = document.getElementById('year-filter').value;
+                loadData(selectedYear);
+            });
         }
 
-        // Load data from API
-        async function loadData() {
+        async function loadData(selectedYear = null) {
             try {
                 showLoading();
-                
-                const response = await fetch('../../BACKEND/api/residus.php');
-                
+
+                let url = '../../BACKEND/api/residus.php';
+                if (selectedYear && selectedYear !== 'all') {
+                    url += `?year=${selectedYear}`;
+                }
+
+                const response = await fetch(url);
+
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (!data || data.length === 0) {
                     throw new Error('No s\'han trobat dades a l\'API');
                 }
-                
+
                 allData = processData(data);
-                
+
                 populateFilters();
                 createDistributionChart();
                 hideLoading();
-                
+
             } catch (error) {
                 console.error('Error loading data:', error);
                 showError(error.message);
             }
         }
 
-        // Process raw data from API
         function processData(rawData) {
             return rawData.map(item => ({
                 year: parseInt(item.any),
@@ -155,48 +159,45 @@
             );
         }
 
-        // Populate filter dropdowns
         function populateFilters() {
             const yearFilter = document.getElementById('year-filter');
-            
-            // Get unique years and sort them
+
+            const existingYears = new Set();
+            for (let i = 1; i < yearFilter.options.length; i++) {
+                existingYears.add(yearFilter.options[i].value);
+            }
+
             const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a);
+
             years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearFilter.appendChild(option);
+                if (!existingYears.has(year.toString())) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearFilter.appendChild(option);
+                }
             });
         }
 
-        // Apply filters
-        function applyFilters() {
-            createDistributionChart();
-        }
-
-        // Create distribution chart
         function createDistributionChart() {
             const ctx = document.getElementById('distribution-chart').getContext('2d');
-            
+
             if (distributionChart) {
                 distributionChart.destroy();
             }
-            
-            // Get selected year from filter or use most recent year
+
             const yearFilter = document.getElementById('year-filter').value;
             let targetYear;
-            
+
             if (yearFilter === 'all') {
-                // Use most recent year available
                 const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a);
                 targetYear = years[0];
             } else {
                 targetYear = parseInt(yearFilter);
             }
-            
-            // Get data for target year from all data
+
             const yearData = allData.filter(item => item.year === targetYear);
-            
+
             if (yearData.length === 0) {
                 ctx.font = '16px Inter';
                 ctx.fillStyle = COLORS.neutral;
@@ -204,11 +205,9 @@
                 ctx.fillText(`No hi ha dades per al ${targetYear}`, ctx.canvas.width / 2, ctx.canvas.height / 2);
                 return;
             }
-            
-            // Update chart title
+
             document.getElementById('distribution-title').textContent = `📊 Distribució per Ranges de Recollida Selectiva (${targetYear})`;
-            
-            // Create ranges
+
             const ranges = [
                 { label: '0-25%', min: 0, max: 25, color: COLORS.critical },
                 { label: '25-40%', min: 25, max: 40, color: COLORS.warning },
@@ -216,13 +215,13 @@
                 { label: '50-60%', min: 50, max: 60, color: COLORS.secondary },
                 { label: '60%+', min: 60, max: 100, color: COLORS.primary }
             ];
-            
-            const counts = ranges.map(range => 
-                yearData.filter(item => 
+
+            const counts = ranges.map(range =>
+                yearData.filter(item =>
                     item.selectiveCollection >= range.min && item.selectiveCollection < range.max
                 ).length
             );
-            
+
             distributionChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -254,7 +253,6 @@
             });
         }
 
-        // Utility functions
         function showLoading() {
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('main-content').classList.add('hidden');
@@ -271,6 +269,11 @@
             document.getElementById('main-content').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('error-message').textContent = message;
+        }
+
+        function retryLoad() {
+            const selectedYear = document.getElementById('year-filter').value;
+            loadData(selectedYear);
         }
     </script>
 </body>
