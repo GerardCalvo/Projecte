@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODS 11.6.1 - Ciutats i Comunitats Sostenibles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #2D5016;
+            --secondary-green: #4A7C59;
+            --accent-green: #6B9080;
+            --light-green: #A4C3A2;
+            --background: #FAFAFA;
+            --text-dark: #1a1a1a;
+            --text-medium: #4a4a4a;
+            --text-light: #6a6a6a;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #2D5016 0%, #4A7C59 100%);
+            --shadow: 0 10px 30px rgba(45, 80, 22, 0.1);
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--background);
+            overflow-x: hidden;
+        }
+
+        
+        /* Header antic */
+        /*
+        .header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-10px) translateY(-10px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .ods-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ods-badge i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        // Navigation
+        .nav {
+            background: var(--white);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-medium);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-green);
+            background: rgba(45, 80, 22, 0.1);
+        }
+        */
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            color: var(--text-medium);
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 3rem 0;
+            overflow: hidden;
+        }
+
+        .problem-content {
+            padding: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .problem-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-medium);
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        /* Chart Container Styles */
+        .chart-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-container:hover {
+            border-color: var(--accent-green);
+            background: rgba(107, 144, 128, 0.05);
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .chart-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-green);
+        }
+
+        .chart-placeholder h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-medium);
+        }
+
+        .chart-placeholder p {
+            font-size: 0.9rem;
+        }
+
+        /* Grid and Carousel Layout */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .charts-carousel {
+            position: relative;
+            display: none;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .carousel-btn {
+            background: var(--primary-green);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .carousel-btn:hover {
+            background: var(--secondary-green);
+            transform: scale(1.1);
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .toggle-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--accent-green);
+            background: transparent;
+            color: var(--accent-green);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-green);
+            color: var(--white);
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(107, 144, 128, 0.3);
+        }
+
+        /* Conclusions */
+        .conclusions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            border-left: 5px solid var(--accent-green);
+        }
+
+        .conclusions h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .conclusions h4 i {
+            margin-right: 0.75rem;
+            color: var(--accent-green);
+        }
+
+        .conclusions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .conclusion-item {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .conclusion-item i {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .conclusion-item h5 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary-green);
+        }
+
+        .conclusion-item p {
+            font-size: 0.95rem;
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        /* EU Comparison */
+        .eu-comparison {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-card {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .comparison-card h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-percentage {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Solutions */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .solution-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .solution-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-green);
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
+        }
+
+        .solution-card i {
+            font-size: 2.5rem;
+            color: var(--accent-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .solution-card h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+
+        .solution-card p {
+            color: var(--text-medium);
+            line-height: 1.7;
+        }
+
+        /* About Us */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .team-member {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
+        }
+
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .member-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .member-role {
+            color: var(--text-medium);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-green);
+            color: var(--white);
+            padding: 3rem 0 2rem;
+            text-align: center;
+            margin-top: 5rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .problem-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Modal for chart details */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            margin: 2% auto;
+            width: 95%;
+            height: 90%;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            width: 100%;
+            height: calc(100% - 80px);
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+
+
+
+
+        /* NOVA CAPÇALERA */
+.new-header {
+    background: var(--gradient);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+/* Navegació superior - CORREGIT */
+.top-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--gradient);
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(45, 80, 22, 0.1);
+    padding: 1rem 0; /* Reduït el padding per millor alineació */
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px; /* Altura fixa per consistència */
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0; /* Eliminar margin per defecte */
+    padding: 0; /* Eliminar padding per defecte */
+    align-items: center; /* Alineació vertical */
+    height: 100%; /* Ocupa tota l'altura del contenidor */
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center; /* Centra verticalment els elements */
+    height: 100%;
+}
+
+.nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center; /* Centra el text verticalment */
+    height: 40px; /* Altura fixa per tots els enllaços */
+    line-height: 1; /* Evita problemes d'altura de línia */
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    height: 100%; /* Ocupa tota l'altura */
+}
+
+.logo i {
+    font-size: 1.8rem;
+    margin-right: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Botó menú mòbil */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Media query per mòbil */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        display: flex;
+    }
+}
+
+/* Contingut principal de la capçalera */
+.header-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 5;
+
+        padding-top: 80px; /* Compensa l'altura de la navegació fixa */
+    min-height: calc(100vh - 80px); /* Ajusta l'altura mínima */
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+}
+
+.header-text h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.header-text .description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-primary {
+    background: var(--white);
+    color: var(--primary-green);
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--white);
+    padding: 1rem 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Icona de reciclatge */
+.header-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.recycle-icon {
+    font-size: 12rem;
+    color: rgba(255, 255, 255, 0.15);
+    animation: float 6s ease-in-out infinite;
+    position: relative;
+}
+
+.recycle-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+}
+
+/* Efecte de fons */
+.background-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: slide 20s linear infinite;
+}
+
+@keyframes slide {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-50px) translateY(-50px); }
+}
+
+/* Menu mòbil */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Responsive actualitzat */
+@media (max-width: 1024px) {
+    .header-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .header-text h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .header-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .header-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .recycle-icon {
+        font-size: 8rem;
+    }
+}
+
+.nav-links {
+    transition: all 0.3s ease-out;
+}
+
+
+
+ /* ESTILS NOUS PER LA IMATGE/HERO */
+        .hero-visual {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            margin-left: 3rem;
+        }
+
+        .sustainability-icon {
+            font-size: 12rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .sustainability-icon:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 10px 20px rgba(255, 255, 255, 0.2));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Versió mòbil */
+        @media (max-width: 768px) {
+            .sustainability-icon {
+                font-size: 8rem;
+                margin-top: 2rem;
+            }
+            
+            .hero-visual {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+
+        /* Complement als estils existents del header */
+        .header-content {
+            align-items: center;
+        }
+
+
+</style>
+
+
+</head>
+<body>
+
+    <!--
+//Header antic
+<header class="header">
+    <div class="header-content">
+        <h1>Ciutats i Comunitats Sostenibles</h1>
+        <p class="subtitle">Anàlisi de la gestió de residus sòlids municipals a Catalunya</p>
+        <div class="ods-badge">
+            <i class="fas fa-recycle"></i>
+            <span>ODS 11.6.1</span>
+        </div>
+    </div>
+</header>
+
+//Navigation antiga
+<nav class="nav">
+    <div class="nav-container">
+        <ul class="nav-links">
+            <li><a href="#problema">Problemàtica</a></li>
+            <li><a href="#positius">Indicadors Positius</a></li>
+            <li><a href="#negatius">Punts a Millorar</a></li>
+            <li><a href="#comparacio">Comparació UE</a></li>
+            <li><a href="#solucions">Solucions</a></li>
+            <li><a href="#sobre-nosaltres">Sobre Nosaltres</a></li>
+        </ul>
+    </div>
+</nav>
+
+-->
+
+<!-- NOVA CAPÇALERA COMPLETA -->
+<header class="new-header">
+    <div class="background-pattern"></div>
+    
+    <!-- Navegació superior -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-recycle"></i>
+                ODS 11.6.1 Catalunya
+            </div>
+            <ul class="nav-links">
+                 <li><a href="#" class="active">Inici</a></li>
+                <li><a href="#problema">Problemàtica</a></li>
+                <li><a href="#positius">Indicadors Positius</a></li>
+                <li><a href="#negatius">Àrees de Millora</a></li>
+                <li><a href="#solucions">Solucions</a></li>
+            </ul>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contingut principal -->
+<!-- Secció de la capçalera actualitzada -->
+<div class="header-main">
+    <div class="header-content">
+        <div class="header-text">
+            <h1>Gestió Sostenible de Residus a Catalunya</h1>
+            <p class="description">
+                Explorant l'Objectiu de Desenvolupament Sostenible 11.6.1: Proporció de residus sòlids municipals recollits i administrats en instal·lacions controlades
+            </p>
+            <div class="header-buttons">
+                <a href="#problema" class="btn-primary">
+                    <i class="fas fa-arrow-down"></i>
+                    Descobreix més
+                </a>
+                <a href="#positius" class="btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    Veure dades
+                </a>
+            </div>
+        </div>
+        
+        <!-- Nou hero visual -->
+        <div class="hero-visual">
+            <div class="sustainability-icon">
+                <i class="fas fa-recycle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+</header>
+
+    <!-- Problemàtica Section -->
+    <section id="problema" class="section">
+        <div class="container">
+            <h2 class="section-title">La Problemàtica dels Residus Urbans</h2>
+            <p class="section-subtitle">L'indicador 11.6.1 dels Objectius de Desenvolupament Sostenible mesura la proporció de residus sòlids municipals recollits i gestionats adequadament</p>
+            
+            <div class="problem-section">
+                <div class="problem-content">
+                    <div class="problem-text">
+                        <h3>Què és l'ODS 11.6.1?</h3>
+                        <p>L'indicador 11.6.1 mesura la <strong>proporció de residus sòlids municipals recollits i administrats en instal·lacions controlades</strong> respecte al total de residus municipals generats, desglossat per ciutat.</p>
+                        <p>Aquest indicador és fonamental per avaluar l'eficàcia dels sistemes de gestió de residus urbans i el seu impacte en la sostenibilitat de les ciutats i comunitats.</p>
+                        <p>Una gestió adequada dels residus és essencial per <strong>reduir la contaminació, protegir la salut pública i avançar cap a una economia circular</strong>.</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">11.6.1</div>
+                            <div class="stat-label">Indicador ODS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">2030</div>
+                            <div class="stat-label">Objectiu Agenda</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Meta de Recollida</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">Residus No Controlats</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Indicadors Positius Section -->
+    <section id="positius" class="section">
+        <div class="container">
+            <h2 class="section-title">Indicadors Positius a Catalunya</h2>
+            <p class="section-subtitle">Analitzem els aspectes més destacats de la gestió de residus a Catalunya</p>
+            
+            <div class="charts-section">
+                <div class="view-toggle">
+                    <button class="toggle-btn active" id="gridView">Vista Graella</button>
+                    <button class="toggle-btn" id="carouselView">Vista Carrussel</button>
+                </div>
+
+                <!-- Grid View -->
+                <div class="charts-grid" id="chartsGrid">
+                    <div class="chart-container" onclick="openModal('chart1.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Evolució Temporal de Reciclatge</h4>
+                            <p>Gràfic 1 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart2.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Comparació per Comarques</h4>
+                            <p>Gràfic 2 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart3.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <h4>Distribució per Tipus de Residu</h4>
+                            <p>Gràfic 3 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart4.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-area"></i>
+                            <h4>Percentatge de Recuperació</h4>
+                            <p>Gràfic 4 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel View -->
+                <div class="charts-carousel" id="chartsCarousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slides" id="carouselSlides">
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart1.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-line"></i>
+                                        <h4>Evolució Temporal de Reciclatge</h4>
+                                        <p>Gràfic 1 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart2.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <h4>Comparació per Comarques</h4>
+                                        <p>Gràfic 2 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart3.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-pie"></i>
+                                        <h4>Distribució per Tipus de Residu</h4>
+                                        <p>Gràfic 3 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart4.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-area"></i>
+                                        <h4>Percentatge de Recuperació</h4>
+                                        <p>Gràfic 4 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn" id="prevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn" id="nextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusions Positives -->
+            <div class="conclusions">
+                <h4><i class="fas fa-lightbulb"></i>Conclusions dels Indicadors Positius</h4>
+                <div class="conclusions-grid">
+                    <div class="conclusion-item">
+                        <i class="fas fa-arrow-trend-up"></i>
+                        <h5>Millora Contínua</h5>
+                        <p>Les dades mostren una tendència positiva en la gestió de residus amb increments anuals significatius.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-medal"></i>
+                        <h5>Comarques Líders</h5>
+                        <p>Algunes comarques destaquen per l'excel·lència en la implementació de sistemes de reciclatge.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-recycle"></i>
+                        <h5>Diversificació</h5>
+                        <p>Catalunya mostra un bon equilibri en la gestió de diferents tipus de residus sòlids.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-target"></i>
+                        <h5>Objectius Assolits</h5>
+                        <p>Molts municipis ja compleixen amb els estàndards europeus de gestió de residus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Punts a Millorar Section -->
+    <section id="negatius" class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Punts a Millorar</h2>
+            <p class="section-subtitle">Identificant les àrees que requereixen atenció i millores en la gestió de residus</p>
+            
+            <div class="charts-section">
+                <div class="view-toggle">
+                    <button class="toggle-btn active" id="gridView2">Vista Graella</button>
+                    <button class="toggle-btn" id="carouselView2">Vista Carrussel</button>
+                </div>
+
+                <!-- Grid View -->
+                <div class="charts-grid" id="chartsGrid2">
+                    <div class="chart-container" onclick="openModal('chart5.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Municipis amb Menor Rendiment</h4>
+                            <p>Gràfic 5 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart6.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Residus No Controlats</h4>
+                            <p>Gràfic 6 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart7.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <h4>Deficiències per Sector</h4>
+                            <p>Gràfic 7 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" onclick="openModal('chart8.html')">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-area"></i>
+                            <h4>Tendències Negatives</h4>
+                            <p>Gràfic 8 - Substitueix amb el teu arxiu HTML</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel View -->
+                <div class="charts-carousel" id="chartsCarousel2">
+                    <div class="carousel-container">
+                        <div class="carousel-slides" id="carouselSlides2">
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart5.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-line"></i>
+                                        <h4>Municipis amb Menor Rendiment</h4>
+                                        <p>Gràfic 5 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart6.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <h4>Residus No Controlats</h4>
+                                        <p>Gràfic 6 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart7.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-pie"></i>
+                                        <h4>Deficiències per Sector</h4>
+                                        <p>Gràfic 7 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <div class="chart-container" onclick="openModal('chart8.html')">
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-area"></i>
+                                        <h4>Tendències Negatives</h4>
+                                        <p>Gràfic 8 - Substitueix amb el teu arxiu HTML</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn" id="prevBtn2">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn" id="nextBtn2">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusions Negatives -->
+            <div class="conclusions">
+                <h4><i class="fas fa-exclamation-triangle"></i>Conclusions dels Punts a Millorar</h4>
+                <div class="conclusions-grid">
+                    <div class="conclusion-item">
+                        <i class="fas fa-arrow-trend-down"></i>
+                        <h5>Disparitats Territorials</h5>
+                        <p>Existeixen diferències significatives entre comarques en la gestió eficient de residus.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-warning"></i>
+                        <h5>Infraestructures Insuficients</h5>
+                        <p>Alguns municipis manquen de les infraestructures necessàries per a una gestió òptima.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-users"></i>
+                        <h5>Conscienciació Ciutadana</h5>
+                        <p>Cal millorar l'educació i sensibilització ciutadana sobre la separació de residus.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <i class="fas fa-clock"></i>
+                        <h5>Urgència d'Acció</h5>
+                        <p>És necessari actuar ràpidament per complir els objectius europeus del 2025.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparació UE Section -->
+    <section id="comparacio" class="section">
+        <div class="container">
+            <h2 class="section-title">Comparació amb Objectius Europeus</h2>
+            <p class="section-subtitle">Analitzem com es posiciona Catalunya respecte als objectius de reciclatge de la Unió Europea</p>
+            
+            <div class="eu-comparison">
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>Objectiu UE 2025</h4>
+                        <div class="comparison-percentage">55%</div>
+                        <div class="comparison-label">Reciclatge de residus municipals</div>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Objectiu UE 2030</h4>
+                        <div class="comparison-percentage">60%</div>
+                        <div class="comparison-label">Reciclatge de residus municipals</div>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Objectiu UE 2035</h4>
+                        <div class="comparison-percentage">65%</div>
+                        <div class="comparison-label">Reciclatge de residus municipals</div>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Catalunya 2023</h4>
+                        <div class="comparison-percentage">XX%</div>
+                        <div class="comparison-label">Actualitzar amb dades reals</div>
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 2.5rem; margin-top: 3rem;">
+                    <h4 style="color: var(--primary-green); margin-bottom: 1.5rem; text-align: center;">
+                        <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                        Context Europeu
+                    </h4>
+                    <p style="text-align: center; color: var(--text-medium); line-height: 1.7; font-size: 1.1rem;">
+                        La Directiva (UE) 2018/851 estableix objectius ambiciosos per al reciclatge de residus municipals. 
+                        Catalunya ha de preparar-se per complir aquests reptes, especialment l'objectiu del 55% per al 2025 
+                        i el 65% per al 2035. L'anàlisi de les dades actuals ens permet identificar les estratègies necessàries 
+                        per assolir aquests objectius.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solucions Section -->
+    <section id="solucions" class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Solucions i Recomanacions</h2>
+            <p class="section-subtitle">Propostes basades en l'anàlisi de dades per millorar la gestió de residus a Catalunya</p>
+            
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>Educació i Sensibilització</h4>
+                    <p>Implementar campanyes educatives massives per sensibilitzar la ciutadania sobre la importància de la separació correcta de residus i els beneficis del reciclatge per al medi ambient i l'economia circular.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-cogs"></i>
+                    <h4>Millora d'Infraestructures</h4>
+                    <p>Invertir en la modernització i ampliació de les infraestructures de recollida i tractament de residus, especialment en els municipis amb menor rendiment identificats en l'anàlisi.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Col·laboració Intermunicipal</h4>
+                    <p>Fomentar la cooperació entre municipis per compartir recursos, coneixements i bones pràctiques, especialment entre aquells amb millors i pitjors resultats.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Monitoratge Continu</h4>
+                    <p>Establir sistemes de seguiment i avaluació contínua per identificar ràpidament desviacions dels objectius i implementar mesures correctores de manera proactiva.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-euro-sign"></i>
+                    <h4>Incentius Econòmics</h4>
+                    <p>Crear sistemes d'incentius per als municipis que superin els objectius de reciclatge i penalitzacions per aquells que no compleixin els mínims establerts.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Economia Circular</h4>
+                    <p>Promoure la transició cap a una economia circular, fomentant la reutilització, la reparació i el reciclatge com a alternatives a l'eliminació de residus.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Nosaltres Section -->
+    <section id="sobre-nosaltres" class="section">
+        <div class="container">
+            <h2 class="section-title">Sobre Nosaltres</h2>
+            <p class="section-subtitle">Coneix l'equip darrere d'aquest projecte de sostenibilitat i gestió de residus</p>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <!-- Substituir amb <img src="foto1.jpg" alt="Nom 1"> -->
+                        M1
+                    </div>
+                    <div class="member-name">Membre 1</div>
+                    <div class="member-role">Especialista en Sostenibilitat</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <!-- Substituir amb <img src="foto2.jpg" alt="Nom 2"> -->
+                        M2
+                    </div>
+                    <div class="member-name">Membre 2</div>
+                    <div class="member-role">Analista de Dades</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <!-- Substituir amb <img src="foto3.jpg" alt="Nom 3"> -->
+                        M3
+                    </div>
+                    <div class="member-name">Membre 3</div>
+                    <div class="member-role">Expert en Medi Ambient</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <!-- Substituir amb <img src="foto4.jpg" alt="Nom 4"> -->
+                        M4
+                    </div>
+                    <div class="member-name">Membre 4</div>
+                    <div class="member-role">Desenvolupador Web</div>
+                </div>
+            </div>
+            
+            <div style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); padding: 3rem; margin-top: 3rem; text-align: center;">
+                <h3 style="color: var(--primary-green); margin-bottom: 1.5rem; font-family: 'Space Grotesk', sans-serif;">
+                    La Nostra Missió
+                </h3>
+                <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-medium); max-width: 800px; margin: 0 auto;">
+                    Som un equip multidisciplinari compromès amb la sostenibilitat i la millora de la gestió de residus a Catalunya. 
+                    A través de l'anàlisi de dades i la visualització d'informació, volem contribuir a l'assoliment dels Objectius 
+                    de Desenvolupament Sostenible i sensibilitzar sobre la importància d'una gestió responsable dels residus urbans.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>ODS 11.6.1 - Ciutats i Comunitats Sostenibles</strong></p>
+            <p>Anàlisi de la gestió de residus sòlids municipals a Catalunya</p>
+            <div class="footer-links">
+                <a href="#problema">Problemàtica</a>
+                <a href="#positius">Indicadors Positius</a>
+                <a href="#negatius">Punts a Millorar</a>
+                <a href="#solucions">Solucions</a>
+            </div>
+            <p>&copy; 2024 - Projecte Sostenibilitat Catalunya</p>
+        </div>
+    </footer>
+
+    <!-- Modal for chart details -->
+    <div id="chartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detall del Gràfic</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="modalIframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globals
+        let currentSlide1 = 0;
+        let currentSlide2 = 0;
+        const totalSlides = 4;
+
+        // Funcions per canviar entre vista graella i carrussel
+        function setupViewToggle(sectionId) {
+            const gridBtn = document.getElementById(`gridView${sectionId ? sectionId : ''}`);
+            const carouselBtn = document.getElementById(`carouselView${sectionId ? sectionId : ''}`);
+            const grid = document.getElementById(`chartsGrid${sectionId ? sectionId : ''}`);
+            const carousel = document.getElementById(`chartsCarousel${sectionId ? sectionId : ''}`);
+
+            gridBtn.addEventListener('click', () => {
+                gridBtn.classList.add('active');
+                carouselBtn.classList.remove('active');
+                grid.style.display = 'grid';
+                carousel.style.display = 'none';
+            });
+
+            carouselBtn.addEventListener('click', () => {
+                carouselBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                grid.style.display = 'none';
+                carousel.style.display = 'block';
+            });
+        }
+
+        // Funcions del carrussel
+        function setupCarousel(sectionId, currentSlideVar) {
+            const prevBtn = document.getElementById(`prevBtn${sectionId ? sectionId : ''}`);
+            const nextBtn = document.getElementById(`nextBtn${sectionId ? sectionId : ''}`);
+            const slides = document.getElementById(`carouselSlides${sectionId ? sectionId : ''}`);
+
+            prevBtn.addEventListener('click', () => {
+                if (sectionId === '2') {
+                    currentSlide2 = (currentSlide2 - 1 + totalSlides) % totalSlides;
+                    updateCarousel(slides, currentSlide2);
+                } else {
+                    currentSlide1 = (currentSlide1 - 1 + totalSlides) % totalSlides;
+                    updateCarousel(slides, currentSlide1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (sectionId === '2') {
+                    currentSlide2 = (currentSlide2 + 1) % totalSlides;
+                    updateCarousel(slides, currentSlide2);
+                } else {
+                    currentSlide1 = (currentSlide1 + 1) % totalSlides;
+                    updateCarousel(slides, currentSlide1);
+                }
+            });
+        }
+
+        function updateCarousel(slidesElement, currentSlide) {
+            const translateX = -currentSlide * 100;
+            slidesElement.style.transform = `translateX(${translateX}%)`;
+        }
+
+        // Funcions del modal
+        function openModal(chartUrl) {
+            const modal = document.getElementById('chartModal');
+            const iframe = document.getElementById('modalIframe');
+            iframe.src = chartUrl;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('chartModal');
+            const iframe = document.getElementById('modalIframe');
+            modal.style.display = 'none';
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tancar modal fent clic fora del contingut
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('chartModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Tancar modal amb ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Smooth scrolling per els enllaços de navegació
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Inicialització quan es carrega la pàgina
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar vista toggle per ambdues seccions
+            setupViewToggle('');
+            setupViewToggle('2');
+            
+            // Configurar carrussel per ambdues seccions
+            setupCarousel('', 1);
+            setupCarousel('2', 2);
+
+            // Animacions a l'scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observar elements per animacions
+            document.querySelectorAll('.solution-card, .team-member, .conclusion-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Actualització automàtica de dades (opcional)
+        async function fetchWasteData() {
+            try {
+                const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json');
+                const data = await response.json();
+                
+                // Aquí pots processar les dades i actualitzar els gràfics
+                console.log('Dades obtingudes:', data);
+                
+                // Exemple d'actualització de estadístiques
+                // updateStatistics(data);
+                
+            } catch (error) {
+                console.error('Error obtenint les dades:', error);
+            }
+        }
+
+        // Cridar la funció per obtenir dades (opcional)
+        // fetchWasteData();
+    </script>
+</body>
+</html>
