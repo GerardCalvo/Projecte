@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolució Recollida Selectiva Catalunya - ODS 11</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        select, button {
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, button:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chart-container {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 600px;
+            width: 100%;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+            padding: 8px;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 2px solid rgba(76, 175, 80, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #2c3e50;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .chart-wrapper {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Evolució Mitjana Recollida Selectiva Catalunya</h1>
+            <p>ODS 11.6.1 - Anàlisi i Predicció de Residus Municipals</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="loadData">Carregar Dades</button>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                Carregant dades de l'API...
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="recyclingChart"></canvas>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2196F3;"></div>
+                <span>Mitjana % Recollida Selectiva Catalunya (Dades Reals)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF9800;"></div>
+                <span>Predicció % Recollida Selectiva (2024-2035)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #E91E63; border-style: dashed;"></div>
+                <span>Objectiu UE 2020 (50%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9C27B0; border-style: dashed;"></div>
+                <span>Objectiu UE 2025 (55%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50; border-style: dashed;"></div>
+                <span>Objectiu UE 2030 (60%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF5722; border-style: dashed;"></div>
+                <span>Objectiu UE 2035 (65%)</span>
+            </div>
+        </div>
+
+        <div class="stats" id="statsContainer"></div>
+    </div>
+
+    <script>
+        class RecyclingDashboard {
+            constructor() {
+                this.chart = null;
+                this.rawData = [];
+                this.processedData = [];
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                document.getElementById('loadData').addEventListener('click', () => this.loadData());
+            }
+
+            async loadData() {
+                const loadingEl = document.getElementById('loading');
+                const button = document.getElementById('loadData');
+                
+                try {
+                    loadingEl.style.display = 'flex';
+                    button.disabled = true;
+                    button.textContent = 'Carregant...';
+
+                    const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
+                    
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    
+                    this.rawData = await response.json();
+                    console.log(`Carregades ${this.rawData.length} files de dades`);
+                    
+                    this.processData();
+                    this.createChart();
+                    this.updateStats();
+                    
+                    loadingEl.style.display = 'none';
+                } catch (error) {
+                    console.error('Error carregant dades:', error);
+                    loadingEl.innerHTML = `<div class="error">Error carregant les dades: ${error.message}</div>`;
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Carregar Dades';
+                }
+            }
+
+            processData() {
+                // Agrupar dades per any i calcular mitjanes
+                const yearlyData = {};
+                
+                this.rawData.forEach(record => {
+                    const year = parseInt(record.any);
+                    const recyclingPercentage = parseFloat(record.r_s_r_m_total);
+                    
+                    if (!isNaN(year) && !isNaN(recyclingPercentage)) {
+                        if (!yearlyData[year]) {
+                            yearlyData[year] = [];
+                        }
+                        yearlyData[year].push(recyclingPercentage);
+                    }
+                });
+
+                // Calcular mitjanes anuals
+                this.processedData = Object.keys(yearlyData)
+                    .map(year => ({
+                        year: parseInt(year),
+                        avgRecycling: yearlyData[year].reduce((sum, val) => sum + val, 0) / yearlyData[year].length
+                    }))
+                    .sort((a, b) => a.year - b.year);
+
+                console.log('Dades processades:', this.processedData);
+            }
+
+            populateYearFilter() {
+                const yearFilter = document.getElementById('yearFilter');
+                const years = [...new Set(this.processedData.map(d => d.year))].sort();
+                
+                // Esborrar opcions existents excepte "Tots els anys"
+                while (yearFilter.children.length > 1) {
+                    yearFilter.removeChild(yearFilter.lastChild);
+                }
+                
+                years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearFilter.appendChild(option);
+                });
+            }
+
+            generatePredictions() {
+                if (this.processedData.length < 3) return [];
+
+                // Usar regressió lineal simple per generar prediccions
+                const recentData = this.processedData.slice(-10); // Últims 10 anys
+                const n = recentData.length;
+                
+                let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+                
+                recentData.forEach(point => {
+                    sumX += point.year;
+                    sumY += point.avgRecycling;
+                    sumXY += point.year * point.avgRecycling;
+                    sumX2 += point.year * point.year;
+                });
+
+                const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
+                // Generar prediccions 2024-2035
+                const predictions = [];
+                for (let year = 2024; year <= 2035; year++) {
+                    let predictedValue = slope * year + intercept;
+                    
+                    // Aplicar límits realistes (no pot ser negatiu ni > 100%)
+                    predictedValue = Math.max(0, Math.min(100, predictedValue));
+                    
+                    predictions.push({
+                        year: year,
+                        avgRecycling: predictedValue
+                    });
+                }
+
+                return predictions;
+            }
+
+            createChart() {
+                const ctx = document.getElementById('recyclingChart');
+                
+                // Verificar que Chart.js estigui disponible
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js no està carregat');
+                    return;
+                }
+                
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+
+                const predictions = this.generatePredictions();
+                const allYears = [...this.processedData, ...predictions].map(d => d.year);
+                const minYear = Math.min(...allYears);
+                const maxYear = Math.max(...allYears);
+                
+                // Calcular el valor màxim per ajustar l'eix Y dinàmicament
+                const allValues = [
+                    ...this.processedData.map(d => d.avgRecycling),
+                    ...predictions.map(d => d.avgRecycling),
+                    50, 55, 60, 65 // Objectius UE
+                ];
+                const maxValue = Math.max(...allValues);
+                const yAxisMax = Math.max(70, Math.ceil(maxValue / 5) * 5 + 5); // Arrodonir cap amunt i afegir marge
+
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: maxYear - minYear + 1}, (_, i) => minYear + i),
+                        datasets: [
+                            {
+                                label: 'Mitjana % Recollida Selectiva Catalunya',
+                                data: this.processedData.map(d => ({x: d.year, y: d.avgRecycling})),
+                                borderColor: '#2196F3',
+                                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#2196F3',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            },
+                            {
+                                label: 'Predicció % Recollida Selectiva',
+                                data: predictions.map(d => ({x: d.year, y: d.avgRecycling})),
+                                borderColor: '#FF9800',
+                                backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                                borderWidth: 3,
+                                borderDash: [5, 5],
+                                fill: false,
+                                tension: 0.4,
+                                pointBackgroundColor: '#FF9800',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            },
+                            {
+                                label: 'Objectiu UE 2020 (50%)',
+                                data: Array.from({length: maxYear - minYear + 1}, () => 50),
+                                borderColor: '#E91E63',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Objectiu UE 2025 (55%)',
+                                data: Array.from({length: maxYear - minYear + 1}, () => 55),
+                                borderColor: '#9C27B0',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Objectiu UE 2030 (60%)',
+                                data: Array.from({length: maxYear - minYear + 1}, () => 60),
+                                borderColor: '#4CAF50',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Objectiu UE 2035 (65%)',
+                                data: Array.from({length: maxYear - minYear + 1}, () => 65),
+                                borderColor: '#FF5722',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Evolució Mitjana Recollida Selectiva Catalunya',
+                                font: { size: 18, weight: 'bold' },
+                                padding: 20
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'center',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: {
+                                        size: 12
+                                    },
+                                    generateLabels: function(chart) {
+                                        const datasets = chart.data.datasets;
+                                        return datasets.map((dataset, i) => {
+                                            const meta = chart.getDatasetMeta(i);
+                                            const style = meta.controller.getStyle(0, false);
+                                            
+                                            return {
+                                                text: dataset.label,
+                                                fillStyle: dataset.borderColor,
+                                                strokeStyle: dataset.borderColor,
+                                                lineWidth: dataset.borderWidth || 2,
+                                                lineDash: dataset.borderDash || [],
+                                                hidden: meta.hidden,
+                                                datasetIndex: i,
+                                                pointStyle: dataset.borderDash && dataset.borderDash.length > 0 ? 'line' : 'circle'
+                                            };
+                                        });
+                                    }
+                                },
+                                onClick: function(e, legendItem) {
+                                    const index = legendItem.datasetIndex;
+                                    const ci = this.chart;
+                                    const meta = ci.getDatasetMeta(index);
+                                    
+                                    meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+                                    ci.update();
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Any',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Percentatge (%)',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                min: 0,
+                                max: yAxisMax,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            }
+
+            updateChart() {
+                if (!this.chart) return;
+
+                const yearFilter = document.getElementById('yearFilter').value;
+                
+                if (yearFilter === 'all') {
+                    // Mostrar totes les dades
+                    this.chart.data.datasets[0].data = this.processedData.map(d => ({x: d.year, y: d.avgRecycling}));
+                } else {
+                    // Filtrar per any específic
+                    const filteredData = this.processedData.filter(d => d.year == yearFilter);
+                    this.chart.data.datasets[0].data = filteredData.map(d => ({x: d.year, y: d.avgRecycling}));
+                }
+                
+                this.chart.update();
+                this.updateStats();
+            }
+
+            updateStats() {
+                const container = document.getElementById('statsContainer');
+                
+                if (this.processedData.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                const latestYear = Math.max(...this.processedData.map(d => d.year));
+                const latestData = this.processedData.find(d => d.year === latestYear);
+                const firstYear = Math.min(...this.processedData.map(d => d.year));
+                const firstData = this.processedData.find(d => d.year === firstYear);
+                
+                const predictions = this.generatePredictions();
+                const prediction2030 = predictions.find(p => p.year === 2030);
+                const prediction2035 = predictions.find(p => p.year === 2035);
+
+                const growth = latestData.avgRecycling - firstData.avgRecycling;
+                const yearSpan = latestYear - firstYear;
+                const avgGrowthRate = growth / yearSpan;
+
+                container.innerHTML = `
+                    <div class="stat-card">
+                        <h3>Any més recent</h3>
+                        <div class="value">${latestYear}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>% Recollida Actual</h3>
+                        <div class="value">${latestData.avgRecycling.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Creixement Total</h3>
+                        <div class="value">+${growth.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Creixement Anual Mig</h3>
+                        <div class="value">+${avgGrowthRate.toFixed(2)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Predicció 2030</h3>
+                        <div class="value">${prediction2030 ? prediction2030.avgRecycling.toFixed(1) + '%' : 'N/A'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Predicció 2035</h3>
+                        <div class="value">${prediction2035 ? prediction2035.avgRecycling.toFixed(1) + '%' : 'N/A'}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Esperar que Chart.js es carregui abans d'inicialitzar
+        function initializeDashboard() {
+            if (typeof Chart !== 'undefined') {
+                const dashboard = new RecyclingDashboard();
+                dashboard.loadData();
+            } else {
+                setTimeout(initializeDashboard, 100);
+            }
+        }
+
+        // Inicialitzar quan el DOM estigui carregat
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>
