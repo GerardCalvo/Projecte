@@ -32,6 +32,8 @@ async function loadData() {
         showLoading();
         
         const response = await fetch('../../api/residus.php');
+        // const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
+
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
