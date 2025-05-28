@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,48 +19,19 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1 class="main-title">
-                    <span class="title-icon">📊</span>
-                    Distribució per Ranges de Recollida Selectiva
-                </h1>
-                <p class="subtitle">Municipis agrupats per percentatge de recollida selectiva</p>
-            </div>
-        </header>
 
         <!-- Loading State -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Carregant dades...</p>
         </div>
 
-        <!-- Error State -->
-        <div id="error" class="error hidden">
-            <div class="error-content">
-                <h3>Error en carregar les dades</h3>
-                <p id="error-message"></p>
-                <button onclick="retryLoad()" class="retry-btn">Tornar a intentar</button>
-            </div>
-        </div>
+
 
         <!-- Main Content -->
         <main id="main-content" class="main-content hidden">
-            <!-- Filters -->
-            <section class="filters-section">
-                <div class="filters">
-                    <div class="filter-group">
-                        <label for="year-filter">Any:</label>
-                        <select id="year-filter">
-                            <option value="all">Tots els anys</option>
-                        </select>
-                    </div>
-                    <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
-                </div>
-            </section>
 
             <!-- Chart -->
             <section class="charts-section">
@@ -68,9 +40,32 @@
                         <h3 id="distribution-title">📊 Distribució per Ranges de Recollida Selectiva</h3>
                         <p>Municipis agrupats per percentatge de recollida selectiva</p>
                     </div>
+                    <section class="filters-section">
+                        <!-- Filters -->
+                        <div class="filters">
+                            <div class="filter-group">
+                                <label for="year-filter">Any:</label>
+                                <select id="year-filter">
+                                    <option value="all">Tots els anys</option>
+                                </select>
+                            </div>
+                            <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
+                        </div>
+                    </section>
+                    <!-- Error State -->
+                    <div id="error" class="error hidden">
+                        <div class="error-content">
+                            <p id="error-message"></p>
+                            <button onclick="retryLoad()" class="retry-btn">Tornar a intentar</button>
+                        </div>
+
+                    </div>
                     <canvas id="distribution-chart"></canvas>
                 </div>
             </section>
+
+
+
         </main>
     </div>
 
@@ -86,7 +81,7 @@
             neutral: '#6c757d'
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setupEventListeners();
             loadData(); // Load initial data with no year filter
         });
@@ -154,7 +149,7 @@
                 bulkyWaste: parseFloat(item.residus_voluminosos_fusta) || 0,
                 textile: parseFloat(item.t_xtil) || 0,
                 oil: parseFloat(item.olis_vegetals) || 0
-            })).filter(item => 
+            })).filter(item =>
                 item.year && item.municipality && !isNaN(item.selectiveCollection)
             );
         }
@@ -242,7 +237,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const percentage = ((context.parsed / yearData.length) * 100).toFixed(1);
                                     return `${context.label}: ${context.parsed} municipis (${percentage}%)`;
                                 }
@@ -277,4 +272,5 @@
         }
     </script>
 </body>
+
 </html>
