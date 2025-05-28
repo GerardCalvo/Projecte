@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <title>Evolució de la generació de residus</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    label {
+      margin-right: 10px;
+    }
+    select, input {
+      margin-right: 20px;
+    }
+    canvas {
+      max-width: 1000px;
+      max-height: 600px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Evolució de la generació de residus i recollida selectiva (mitjana anual)</h1>
+
+<div class="controls">
+  <label for="yearFrom">Any des de:</label>
+  <input type="number" id="yearFrom" value="2000" min="2000" max="2023" />
+
+  <label for="yearTo">Any fins a:</label>
+  <input type="number" id="yearTo" value="2023" min="2000" max="2023" />
+
+  <label for="minPop">Habitants mínims:</label>
+  <input type="number" id="minPop" value="0" min="0" />
+
+  <label for="maxPop">Habitants màxims:</label>
+  <input type="number" id="maxPop" value="100000" min="0" />
+
+  <br><br>
+
+  <label><input type="checkbox" id="line1" checked> Kg / hab / any</label>
+  <label><input type="checkbox" id="line2" checked> Kg/hab/any recollida selectiva</label>
+  <label><input type="checkbox" id="line3" checked> % Recollida selectiva</label>
+
+  <br><br>
+
+  <button id="updateBtn">Actualitzar gràfic</button>
+</div>
+
+<canvas id="lineChart"></canvas>
+
+<script>
+  const csvURL = "https://raw.githubusercontent.com/agustilopz/dataset/refs/heads/main/Estadistiques_de_residus_municipals_20250513.csv";
+  let rawData = [];
+  let chart = null;
+
+  async function fetchData() {
+    try {
+      const response = await fetch(csvURL);
+      if (!response.ok) throw new Error('Error carregant dades');
+      const csvText = await response.text();
+      rawData = parseCSV(csvText);
+      updateChart();
+    } catch (e) {
+      alert("No s'han pogut carregar les dades: " + e.message);
+    }
+  }
+
+  function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',');
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      const values = line.split(',');
+      const entry = {};
+      headers.forEach((header, index) => {
+        entry[header.trim()] = values[index] ? values[index].trim() : '';
+      });
+      data.push(entry);
+    }
+
+    return data.map(d => {
+      // Calcular correctament el % de recollida selectiva
+      const kgHabAny = Number(d['Kg / hab / any']) || 0;
+      const kgHabAnyRS = Number(d['Kg/hab/any recollida selectiva']) || 0;
+      const percentRS = kgHabAny > 0 ? Math.min(100, (kgHabAnyRS / kgHabAny) * 100) : 0;
+      
+      return {
+        any: parseInt(d['Any']),
+        poblacio: Number(d['Població']) || 0,
+        kg_hab_any: kgHabAny,
+        kg_hab_any_recollida_selectiva: kgHabAnyRS,
+        percent_recollida_selectiva: percentRS
+      };
+    });
+  }
+
+  function processData(yearFrom, yearTo, minPop, maxPop, selectedLines) {
+    const filtered = rawData.filter(d =>
+      d.any >= yearFrom &&
+      d.any <= yearTo &&
+      d.poblacio >= minPop &&
+      d.poblacio <= maxPop
+    );
+
+    const aggregation = {};
+    filtered.forEach(d => {
+      if (!aggregation[d.any]) aggregation[d.any] = { sum1: 0, sum2: 0, sum3: 0, count: 0 };
+      aggregation[d.any].sum1 += d.kg_hab_any;
+      aggregation[d.any].sum2 += d.kg_hab_any_recollida_selectiva;
+      aggregation[d.any].sum3 += d.percent_recollida_selectiva;
+      aggregation[d.any].count++;
+    });
+
+    const years = Object.keys(aggregation).map(y => parseInt(y)).sort((a, b) => a - b);
+    const dataset1 = years.map(y => aggregation[y].count ? aggregation[y].sum1 / aggregation[y].count : null);
+    const dataset2 = years.map(y => aggregation[y].count ? aggregation[y].sum2 / aggregation[y].count : null);
+    const dataset3 = years.map(y => aggregation[y].count ? aggregation[y].sum3 / aggregation[y].count : null);
+
+    const datasets = [];
+    if (selectedLines.includes('line1')) {
+      datasets.push({
+        label: 'Kg / hab / any',
+        data: dataset1,
+        borderColor: 'red',
+        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+        yAxisID: 'y',
+        tension: 0.1
+      });
+    }
+    if (selectedLines.includes('line2')) {
+      datasets.push({
+        label: 'Kg/hab/any recollida selectiva',
+        data: dataset2,
+        borderColor: 'green',
+        backgroundColor: 'rgba(0, 255, 0, 0.1)',
+        yAxisID: 'y',
+        tension: 0.1
+      });
+    }
+    if (selectedLines.includes('line3')) {
+      datasets.push({
+        label: '% Recollida selectiva',
+        data: dataset3,
+        borderColor: 'blue',
+        backgroundColor: 'rgba(0, 0, 255, 0.1)',
+        yAxisID: 'y1',
+        tension: 0.1
+      });
+    }
+
+    return { years, datasets };
+  }
+
+  function renderChart(data) {
+    const ctx = document.getElementById("lineChart").getContext("2d");
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.years,
+        datasets: data.datasets
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        stacked: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Evolució de la generació de residus i recollida selectiva (mitjana anual)'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  if (context.dataset.label === '% Recollida selectiva') {
+                    label += context.parsed.y.toFixed(1) + '%';
+                  } else {
+                    label += context.parsed.y.toFixed(1) + ' kg';
+                  }
+                }
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Kg per càpita'
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            min: 0,
+            max: 100,
+            grid: {
+              drawOnChartArea: false
+            },
+            title: {
+              display: true,
+              text: '% Recollida selectiva'
+            },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function updateChart() {
+    const yearFrom = parseInt(document.getElementById("yearFrom").value);
+    const yearTo = parseInt(document.getElementById("yearTo").value);
+    const minPop = parseInt(document.getElementById("minPop").value);
+    const maxPop = parseInt(document.getElementById("maxPop").value);
+    const selectedLines = [];
+    if (document.getElementById("line1").checked) selectedLines.push('line1');
+    if (document.getElementById("line2").checked) selectedLines.push('line2');
+    if (document.getElementById("line3").checked) selectedLines.push('line3');
+
+    const processedData = processData(yearFrom, yearTo, minPop, maxPop, selectedLines);
+
+    if (processedData.datasets.length === 0) {
+      alert("No hi ha dades que compleixin els criteris.");
+      return;
+    }
+
+    renderChart(processedData);
+  }
+
+  document.getElementById("updateBtn").addEventListener("click", updateChart);
+
+  fetchData();
+</script>
+
+</body>
+</html>

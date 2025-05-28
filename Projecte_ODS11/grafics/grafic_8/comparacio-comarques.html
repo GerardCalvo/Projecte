@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparació per Comarques</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+.chart-container {
+    position: relative;
+    height: 600px; /* o el valor que vulguis */
+    width: 100%;
+}
+
+canvas#regional-chart {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="main-title">
+                    <span class="title-icon">🏞️</span>
+                    Comparació per Comarques
+                </h1>
+                <p class="subtitle">Percentatge mitjà de recollida selectiva per comarca</p>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregant dades...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error hidden">
+            <div class="error-content">
+                <h3>Error en carregar les dades</h3>
+                <p id="error-message"></p>
+                <button onclick="loadData()" class="retry-btn">Tornar a intentar</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content hidden">
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="year-filter">Any:</label>
+                        <select id="year-filter">
+                            <option value="all">Tots els anys</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters" class="apply-btn">Aplicar Filtres</button>
+                </div>
+            </section>
+
+            <!-- Chart -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 id="chart-title">🏞️ Comparació per Comarques</h3>
+                        <p id="chart-subtitle">Percentatge mitjà de recollida selectiva per comarca</p>
+                    </div>
+                    <canvas id="regional-chart"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Dades: Portal de Transparència de Catalunya | ODS 11: Ciutats i Comunitats Sostenibles</p>
+        </footer>
+    </div>
+
+    <script src="comparacio-comarques.js"></script>
+</body>
+</html>

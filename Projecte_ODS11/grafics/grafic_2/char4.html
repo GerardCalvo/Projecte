@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <title>Evolució anual dels tipus de tractament de residus (kg)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    #chart-container {
+      max-width: 900px;
+      margin: auto;
+    }
+    #loading {
+      font-size: 18px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Evolució anual dels tipus de tractament de residus (kg)</h2>
+  <div id="chart-container">
+    <canvas id="residusChart"></canvas>
+  </div>
+  <div id="loading">Carregant dades...</div>
+
+  <script>
+    // URL de l'API que retorna el JSON
+    //const API_URL = 'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=5000';
+    const API_URL = 'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=50000&$order=any ASC';
+
+
+    // Variables per emmagatzemar les dades agrupades per any
+    const dadesPerAny = {};
+
+    // Categories que volem processar i els colors per Chart.js
+    const categories = {
+      'resta_a_dip_sit': '#FF6B6B',
+      'resta_a_incineraci': '#4ECDC4',
+      'resta_a_tractament_mec_nic': '#45B7D1'
+    };
+
+    // Funció per sumar dades per any i categoria
+    function processarDades(data) {
+      data.forEach(item => {
+        const any = item.any;
+        if (!any) return; // Ignorar si no té any
+
+        // Inicialitzar l'any si cal
+        if (!dadesPerAny[any]) {
+          dadesPerAny[any] = {
+            'resta_a_dip_sit': 0,
+            'resta_a_incineraci': 0,
+            'resta_a_tractament_mec_nic': 0
+          };
+        }
+
+        // Sumar valor (convertir a float, 0 si no és número)
+        Object.keys(categories).forEach(cat => {
+          let val = parseFloat(item[cat]);
+          if (isNaN(val)) val = 0;
+          dadesPerAny[any][cat] += val;
+        });
+      });
+    }
+
+    // Funció per transformar dadesPerAny a arrays ordenats per anys
+    function prepararDadesPerChart() {
+      const anys = Object.keys(dadesPerAny).sort();
+      const datasets = [];
+
+      Object.entries(categories).forEach(([cat, color]) => {
+        const dades = anys.map(any => dadesPerAny[any][cat]);
+        datasets.push({
+          label: cat
+            .replace(/_/g, ' ')
+            .replace('resta a dip sit', 'Resta a Dipòsit')
+            .replace('resta a incineraci', 'Resta a Incineració')
+            .replace('resta a tractament mec nic', 'Resta a Tractament Mecànic Biològic'),
+          data: dades,
+          borderColor: color,
+          backgroundColor: color.replace(')', ',0.3)').replace('rgb', 'rgba'),
+          fill: false,
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        });
+      });
+
+      return { anys, datasets };
+    }
+
+    // Crear el gràfic un cop tinguem dades preparades
+    function crearGrafica(anys, datasets) {
+      document.getElementById('loading').style.display = 'none';
+
+      const ctx = document.getElementById('residusChart').getContext('2d');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: anys,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'nearest',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { font: { size: 14 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: context => context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' kg'
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Any',
+                font: { size: 16 }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Quantitat (kg)',
+                font: { size: 16 }
+              },
+              ticks: {
+                callback: value => value.toLocaleString()
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Funció principal per carregar i processar dades
+    async function main() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        processarDades(data);
+
+        const { anys, datasets } = prepararDadesPerChart();
+
+        crearGrafica(anys, datasets);
+      } catch (error) {
+        document.getElementById('loading').textContent = 'Error carregant dades.';
+        console.error('Error al carregar o processar dades:', error);
+      }
+    }
+
+    main();
+
+  </script>
+
+</body>
+</html>
