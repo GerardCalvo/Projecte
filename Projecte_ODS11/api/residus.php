@@ -1,6 +1,6 @@
 <?php
-include '../includes/errorHandler.proc.php';
-include '../includes/dbConnect.proc.php';
+include 'includes/errorHandler.proc.php';
+include 'includes/dbConnect.proc.php';
 ini_set('memory_limit', '512M');
 
 // Peticions GET
