@@ -347,6 +347,14 @@
             margin-top: 2rem;
         }
 
+        .comparison-grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            min-height: 550px;
+        }
+
         .comparison-card {
             background: var(--gradient);
             color: var(--white);
@@ -985,6 +993,64 @@
         }
 
 
+
+
+        /* Indicadores Section */
+        .indicadores-section {
+            padding: 5rem 0;
+        }
+
+        .indicadores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .indicador-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .indicador-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(45, 80, 22, 0.15);
+        }
+
+        .indicador-header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .indicador-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .indicador-content {
+            padding: 2rem;
+        }
+
+        .indicador-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+
+        .indicador-description {
+            color: var(--text-medium);
+            margin-bottom: 1.5rem;
+        }
+
+
 </style>
 
 
@@ -1111,6 +1177,37 @@
             </div>
         </div>
     </section>
+
+
+        <!-- Comparació UE Section -->
+        <section id="comparacio" class="section">
+            <div class="container">
+                <h2 class="section-title">Comparació amb Objectius Europeus</h2>
+                <p class="section-subtitle">Analitzem com es posiciona Catalunya respecte als objectius de reciclatge de la Unió Europea</p>
+                
+                <div class="eu-comparison">
+                    <div class="comparison-grid-stats">
+                        <iframe src="panels/panel1.html" style="width:100%; height:100%; border:none;"></iframe>
+
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 2.5rem; margin-top: 3rem;">
+                        <h4 style="color: var(--primary-green); margin-bottom: 1.5rem; text-align: center;">
+                            <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                            Context Europeu
+                        </h4>
+                        <p style="text-align: center; color: var(--text-medium); line-height: 1.7; font-size: 1.1rem;">
+                            La Directiva (UE) 2018/851 estableix objectius ambiciosos per al reciclatge de residus municipals. 
+                            Catalunya ha de preparar-se per complir aquests reptes, especialment l'objectiu del 55% per al 2025 
+                            i el 65% per al 2035. L'anàlisi de les dades actuals ens permet identificar les estratègies necessàries 
+                            per assolir aquests objectius.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
 
     <!-- Indicadors Positius Section -->
     <section id="positius" class="section">
@@ -1247,6 +1344,52 @@
                     </div>
                 </div>
             </div>
+
+
+
+                    <!-- Indicadores Positivos Section -->
+        <section class="section" id="indicadors">
+            <div class="container">
+                <h2 class="section-title">Indicadors Positius</h2>
+                <p class="section-subtitle">Tot i els desafiaments, Catalunya ha mostrat un progrés significatiu en diversos aspectes de la gestió de residus.</p>
+
+                <div class="indicadores-grid">
+                    <div class="indicador-card">
+                        <div class="indicador-header">
+                            <div class="indicador-value">+15%</div>
+                        </div>
+                        <div class="indicador-content">
+                            <h4 class="indicador-title">Augment de la Recollida Selectiva</h4>
+                            <p class="indicador-description">La recollida selectiva ha augmentat un 15% en els últims 5 anys, mostrant un compromís creixent dels ciutadans amb la separació de residus.</p>
+                        </div>
+                    </div>
+
+                    <div class="indicador-card">
+                        <div class="indicador-header">
+                            <div class="indicador-value">-30%</div>
+                        </div>
+                        <div class="indicador-content">
+                            <h4 class="indicador-title">Reducció d'Emissions</h4>
+                            <p class="indicador-description">Les millores en la gestió de residus han contribuït a una reducció del 30% en les emissions de gasos d'efecte hivernacle provinents del sector.</p>
+                        </div>
+                    </div>
+
+                    <div class="indicador-card">
+                        <div class="indicador-header">
+                            <div class="indicador-value">85%</div>
+                        </div>
+                        <div class="indicador-content">
+                            <h4 class="indicador-title">Tractament de Residus Controlat</h4>
+                            <p class="indicador-description">El 85% dels municipis catalans disposen ja d'instal·lacions de tractament de residus controlades i modernes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
         </div>
     </section>
 

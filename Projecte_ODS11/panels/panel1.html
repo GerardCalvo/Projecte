@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panell Integral - Residus Catalunya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2D5016;
+            --secondary-green: #4A7C59;
+            --accent-green: #6B9080;
+            --light-green: #A4C3A2;
+            --background: #FAFAFA;
+            --text-dark: #1a1a1a;
+            --text-medium: #4a4a4a;
+            --text-light: #6a6a6a;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #2D5016 0%, #4A7C59 100%);
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .filters {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            background: white;
+            min-width: 180px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(107, 144, 128, 0.1);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-variation {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .variation-positive {
+            color: #90EE90;
+        }
+
+        .variation-negative {
+            color: #FFB6C1;
+        }
+
+        .variation-neutral {
+            color: #E0E0E0;
+        }
+
+        .variation-arrow {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: var(--text-medium);
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .stat-card {
+                min-height: 120px;
+                padding: 1.25rem;
+            }
+            
+            .stat-value {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="filters">
+            <div class="filter-group">
+                <label for="yearFilter">Any:</label>
+                <select id="yearFilter">
+                    <option value="">Tots els anys</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="municipiFilter">Municipi:</label>
+                <select id="municipiFilter">
+                    <option value="">Tots els municipis</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="comarcaFilter">Comarca:</label>
+                <select id="comarcaFilter">
+                    <option value="">Totes les comarques</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-overview" id="statsGrid">
+            <div class="loading">Carregant dades del sistema...</div>
+        </div>
+    </div>
+
+    <script>
+        let allData = [];
+
+        // Carregar dades de l'API
+        async function loadData() {
+            try {
+                const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
+                if (!response.ok) throw new Error('Error carregant dades');
+                
+                allData = await response.json();
+                
+                // Convertir strings a números amb validació
+                allData.forEach(item => {
+                    Object.keys(item).forEach(key => {
+                        if (key !== 'municipi' && key !== 'comarca' && key !== 'codi_municipi' && key !== 'any') {
+                            const numValue = parseFloat(item[key]);
+                            item[key] = isNaN(numValue) ? 0 : numValue;
+                        }
+                    });
+                });
+
+                populateFilters();
+                updateStats();
+            } catch (error) {
+                document.getElementById('statsGrid').innerHTML = 
+                    `<div class="stat-card"><div class="stat-value danger">Error</div><div class="stat-label">No s'han pogut carregar les dades</div></div>`;
+            }
+        }
+
+        // Omplir els filtres
+        function populateFilters() {
+            const years = [...new Set(allData.map(d => d.any))].sort().reverse();
+            const municipis = [...new Set(allData.map(d => d.municipi))].sort();
+            const comarques = [...new Set(allData.map(d => d.comarca))].filter(c => c).sort();
+
+            const yearSelect = document.getElementById('yearFilter');
+            const municipiSelect = document.getElementById('municipiFilter');
+            const comarcaSelect = document.getElementById('comarcaFilter');
+
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+
+            municipis.forEach(municipi => {
+                const option = document.createElement('option');
+                option.value = municipi;
+                option.textContent = municipi;
+                municipiSelect.appendChild(option);
+            });
+
+            comarques.forEach(comarca => {
+                const option = document.createElement('option');
+                option.value = comarca;
+                option.textContent = comarca;
+                comarcaSelect.appendChild(option);
+            });
+            // Seleccionar 2023 per defecte si existeix
+if (years.includes('2023')) {
+    yearSelect.value = '2023';
+}
+        }
+
+        // Filtrar dades
+        function getFilteredData(year = null) {
+            const selectedYear = year || document.getElementById('yearFilter').value;
+            const selectedMunicipi = document.getElementById('municipiFilter').value;
+            const selectedComarca = document.getElementById('comarcaFilter').value;
+
+            return allData.filter(item => {
+                if (selectedYear && item.any !== selectedYear) return false;
+                if (selectedMunicipi && item.municipi !== selectedMunicipi) return false;
+                if (selectedComarca && item.comarca !== selectedComarca) return false;
+                return true;
+            });
+        }
+
+        // Calcular estadístiques per any
+        function calculateStatsForYear(year) {
+            const data = getFilteredData(year);
+            
+            if (data.length === 0) return null;
+
+            const validData = data.filter(d => 
+                !isNaN(d.r_s_r_m_total) && 
+                !isNaN(d.f_r_r_m) && 
+                !isNaN(d.kg_hab_any) &&
+                d.r_s_r_m_total >= 0 && 
+                d.f_r_r_m >= 0 && 
+                d.kg_hab_any >= 0
+            );
+
+            if (validData.length === 0) return null;
+
+            const avgRecollida = validData.reduce((sum, d) => sum + d.r_s_r_m_total, 0) / validData.length;
+            const avgResta = validData.reduce((sum, d) => sum + d.f_r_r_m, 0) / validData.length;
+            const avgGeneracio = validData.reduce((sum, d) => sum + d.kg_hab_any, 0) / validData.length;
+            
+            const municipisCompleixen2020 = validData.filter(d => d.r_s_r_m_total >= 50).length;
+            const percentatgeCompliment2020 = (municipisCompleixen2020 / validData.length) * 100;
+
+            const municipisCompleixen2025 = validData.filter(d => d.r_s_r_m_total >= 55).length;
+            const percentatgeCompliment2025 = (municipisCompleixen2025 / validData.length) * 100;
+
+            const maxRecollida = Math.max(...validData.map(d => d.r_s_r_m_total));
+            const minRecollida = Math.min(...validData.map(d => d.r_s_r_m_total));
+
+            return {
+                avgRecollida,
+                avgResta,
+                avgGeneracio,
+                percentatgeCompliment2020,
+                percentatgeCompliment2025,
+                maxRecollida,
+                minRecollida,
+                municipisUnics: new Set(validData.map(d => d.municipi)).size
+            };
+        }
+
+        // Crear element de variació
+        function createVariationElement(current, previous, suffix = '%', isPercentage = true, previousYear = null) {
+            if (previous === null || previous === undefined) {
+                return '<div class="stat-variation variation-neutral">Sense dades anteriors</div>';
+            }
+
+            const variation = current - previous;
+            const absVariation = Math.abs(variation);
+            const variationClass = variation > 0 ? 'variation-positive' : 
+                                 variation < 0 ? 'variation-negative' : 'variation-neutral';
+            const arrow = variation > 0 ? '↗' : variation < 0 ? '↘' : '→';
+            
+            let displayVariation;
+            if (isPercentage) {
+                displayVariation = `${variation > 0 ? '+' : ''}${variation.toFixed(1)}${suffix}`;
+            } else {
+                displayVariation = `${variation > 0 ? '+' : ''}${variation.toFixed(0)}${suffix}`;
+            }
+
+            const yearText = previousYear ? `vs ${previousYear}` : 'vs any anterior';
+
+            return `<div class="stat-variation ${variationClass}">
+                <span class="variation-arrow">${arrow}</span>
+                <span>${displayVariation} ${yearText}</span>
+            </div>`;
+        }
+
+        // Actualitzar estadístiques principals
+        function updateStats() {
+            const selectedYear = document.getElementById('yearFilter').value;
+            const currentStats = calculateStatsForYear(selectedYear);
+            
+            if (!currentStats) {
+                document.getElementById('statsGrid').innerHTML = 
+                    '<div class="stat-card"><div class="stat-value">No hi ha dades</div></div>';
+                return;
+            }
+
+            // Calcular estadístiques de l'any anterior per comparació
+            let previousStats = null;
+            let previousYear = null;
+            if (selectedYear) {
+                previousYear = (parseInt(selectedYear) - 1).toString();
+                previousStats = calculateStatsForYear(previousYear);
+            }
+
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.avgRecollida.toFixed(1)}%</div>
+                    <div class="stat-label">Mitjana Recollida Selectiva</div>
+                    ${selectedYear ? createVariationElement(currentStats.avgRecollida, previousStats?.avgRecollida, '%', true, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.avgResta.toFixed(1)}%</div>
+                    <div class="stat-label">Mitjana Residus No Selectius</div>
+                    ${selectedYear ? createVariationElement(currentStats.avgResta, previousStats?.avgResta, '%', true, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.avgGeneracio.toFixed(0)} kg</div>
+                    <div class="stat-label">Generació per Habitant/Any</div>
+                    ${selectedYear ? createVariationElement(currentStats.avgGeneracio, previousStats?.avgGeneracio, ' kg', false, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.percentatgeCompliment2020.toFixed(1)}%</div>
+                    <div class="stat-label">Compleixen Objectiu UE 2020 (50%)</div>
+                    ${selectedYear ? createVariationElement(currentStats.percentatgeCompliment2020, previousStats?.percentatgeCompliment2020, '%', true, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.percentatgeCompliment2025.toFixed(1)}%</div>
+                    <div class="stat-label">Compleixen Objectiu UE 2025 (55%)</div>
+                    ${selectedYear ? createVariationElement(currentStats.percentatgeCompliment2025, previousStats?.percentatgeCompliment2025, '%', true, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.municipisUnics}</div>
+                    <div class="stat-label">Municipis Analitzats</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.maxRecollida.toFixed(1)}%</div>
+                    <div class="stat-label">Millor Recollida Selectiva</div>
+                    ${selectedYear ? createVariationElement(currentStats.maxRecollida, previousStats?.maxRecollida, '%', true, previousYear) : ''}
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${currentStats.minRecollida.toFixed(1)}%</div>
+                    <div class="stat-label">Pitjor Recollida Selectiva</div>
+                    ${selectedYear ? createVariationElement(currentStats.minRecollida, previousStats?.minRecollida, '%', true, previousYear) : ''}
+                </div>
+            `;
+
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+        }
+
+        // Event listeners per als filtres
+        document.getElementById('yearFilter').addEventListener('change', updateStats);
+        document.getElementById('municipiFilter').addEventListener('change', updateStats);
+        document.getElementById('comarcaFilter').addEventListener('change', updateStats);
+
+        // Inicialitzar
+        loadData();
+    </script>
+</body>
+</html>
