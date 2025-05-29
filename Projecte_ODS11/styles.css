@@ -1116,3 +1116,19 @@
         color: var(--text-medium);
         margin-bottom: 1.5rem;
     }
+
+
+    /* LINK */
+
+    .source-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.source-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
