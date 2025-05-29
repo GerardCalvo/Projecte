@@ -112,8 +112,8 @@
         // Función para cargar todos los datos de residuos
         async function carregarTotsResidus() {
             try {
-                //const response = await fetch('../../api/residus.php');
-                const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=25000');
+                const response = await fetch('../../api/residus.php');
+                //const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=25000');
                 return await response.json();
             } catch (error) {
                 console.error('Error cargando datos de residuos:', error);
