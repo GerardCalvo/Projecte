@@ -11,1157 +11,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-green: #2D5016;
-            --secondary-green: #4A7C59;
-            --accent-green: #6B9080;
-            --light-green: #A4C3A2;
-            --background: #FAFAFA;
-            --text-dark: #1a1a1a;
-            --text-medium: #4a4a4a;
-            --text-light: #6a6a6a;
-            --white: #ffffff;
-            --gradient: linear-gradient(135deg, #2D5016 0%, #4A7C59 100%);
-            --shadow: 0 10px 30px rgba(45, 80, 22, 0.1);
-            --border-radius: 16px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--background);
-            overflow-x: hidden;
-        }
-
-
-
-        /* Container */
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Sections */
-        .section {
-            padding: 5rem 0;
-            position: relative;
-        }
-
-        .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--primary-green);
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-            text-align: center;
-            color: var(--text-medium);
-            margin-bottom: 3rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Problem Section */
-        .problem-section {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin: 3rem 0;
-            overflow: hidden;
-        }
-
-        .problem-content {
-            padding: 3rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .problem-text h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--primary-green);
-            margin-bottom: 1.5rem;
-        }
-
-        .problem-text p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-medium);
-            margin-bottom: 1.5rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-
-        .stat-card {
-            background: var(--gradient);
-            color: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        /* Charts Section */
-        .charts-section {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 3rem;
-            margin: 3rem 0;
-        }
-
-        /* Chart Container Styles */
-        .chart-container {
-            position: relative;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 2rem 0;
-            height: 650px;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chart-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            color: var(--text-medium);
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .chart-content {
-            flex: 1;
-            width: 100%;
-        }
-
-        .chart-content iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .chart-container:hover {
-            border-color: var(--accent-green);
-            background: rgba(107, 144, 128, 0.05);
-        }
-
-        .chart-placeholder {
-            overflow: hidden;
-            text-align: center;
-            color: var(--text-light);
-            width: 100%;
-            height: 100%;
-
-
-        }
-
-        .chart-placeholder iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .chart-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--accent-green);
-        }
-
-        .chart-placeholder h4 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-medium);
-        }
-
-        .chart-placeholder p {
-            font-size: 0.9rem;
-        }
-
-        /* Grid and Carousel Layout */
-        .charts-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .charts-carousel {
-            position: relative;
-            display: none;
-        }
-
-        .carousel-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .carousel-slides {
-            display: flex;
-            transition: transform 0.3s ease;
-        }
-
-        .carousel-slide {
-            min-width: 100%;
-            flex-shrink: 0;
-        }
-
-        .carousel-controls {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .carousel-btn {
-            background: var(--primary-green);
-            color: var(--white);
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-        }
-
-        .carousel-btn:hover {
-            background: var(--secondary-green);
-            transform: scale(1.1);
-        }
-
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .toggle-btn {
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--accent-green);
-            background: transparent;
-            color: var(--accent-green);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .toggle-btn.active {
-            background: var(--accent-green);
-            color: var(--white);
-        }
-
-        .toggle-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(107, 144, 128, 0.3);
-        }
-
-        /* Conclusions */
-        .conclusions {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 2.5rem;
-            margin: 3rem 0;
-            border-left: 5px solid var(--accent-green);
-        }
-
-        .conclusions h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            color: var(--primary-green);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .conclusions h4 i {
-            margin-right: 0.75rem;
-            color: var(--accent-green);
-        }
-
-        .conclusions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .conclusion-item {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .conclusion-item i {
-            color: var(--accent-green);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .conclusion-item h5 {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--primary-green);
-        }
-
-        .conclusion-item p {
-            font-size: 0.95rem;
-            color: var(--text-medium);
-            line-height: 1.6;
-        }
-
-        /* EU Comparison */
-        .eu-comparison {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 3rem;
-            margin: 3rem 0;
-        }
-
-        .panel-stats {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 3rem;
-            margin: 1.5rem 0;
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-.comparison-grid-stats {
-    aspect-ratio: 16/9; /* o la proporción que necesites */
-    width: 100%;
-}
-
-.comparison-grid-stats iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-        .comparison-card {
-            background: var(--gradient);
-            color: var(--white);
-            padding: 2.5rem;
-            border-radius: 12px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .comparison-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .comparison-card h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
-
-        .comparison-percentage {
-            font-size: 3rem;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: 0.5rem;
-        }
-
-        .comparison-label {
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        /* Solutions */
-        .solutions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .solution-card {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .solution-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-green);
-        }
-
-        .solution-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
-        }
-
-        .solution-card i {
-            font-size: 2.5rem;
-            color: var(--accent-green);
-            margin-bottom: 1.5rem;
-        }
-
-        .solution-card h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary-green);
-            margin-bottom: 1rem;
-        }
-
-        .solution-card p {
-            color: var(--text-medium);
-            line-height: 1.7;
-        }
-
-        /* About Us */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .team-member {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .team-member:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
-        }
-
-.member-photo {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: var(--gradient);
-    margin: 0 auto 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* Important per tallar la imatge */
-}
-
-.member-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-        .member-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .member-role {
-            color: var(--text-medium);
-            font-size: 0.95rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--primary-green);
-            color: var(--white);
-            padding: 3rem 0 2rem;
-            text-align: center;
-            margin-top: 5rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .footer p {
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-links a {
-            color: var(--white);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            opacity: 1;
-        }
-
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
-
-            .header .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .nav-links {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .problem-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .container {
-                padding: 0 1rem;
-            }
-        }
-
-        /* Modal for chart details */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            position: relative;
-            margin: 2% auto;
-            width: 95%;
-            height: 90%;
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: var(--gradient);
-            color: var(--white);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-body {
-            width: 100%;
-            height: calc(100% - 80px);
-        }
-
-        .modal-body iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-
-
-
-
-        /* NOVA CAPÇALERA */
-        .new-header {
-            background: var(--gradient);
-            min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navegació superior - CORREGIT */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: var(--gradient);
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.1);
-            padding: 1rem 0;
-            /* Reduït el padding per millor alineació */
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-            /* Altura fixa per consistència */
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-            margin: 0;
-            /* Eliminar margin per defecte */
-            padding: 0;
-            /* Eliminar padding per defecte */
-            align-items: center;
-            /* Alineació vertical */
-            height: 100%;
-            /* Ocupa tota l'altura del contenidor */
-        }
-
-        .nav-links li {
-            display: flex;
-            align-items: center;
-            /* Centra verticalment els elements */
-            height: 100%;
-        }
-
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            /* Centra el text verticalment */
-            height: 40px;
-            /* Altura fixa per tots els enllaços */
-            line-height: 1;
-            /* Evita problemes d'altura de línia */
-        }
-
-        .nav-links a.active,
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: var(--white);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            height: 100%;
-            /* Ocupa tota l'altura */
-        }
-
-        .logo i {
-            font-size: 1.8rem;
-            margin-right: 0.75rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Botó menú mòbil */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Media query per mòbil */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display: flex;
-            }
-        }
-
-        /* Contingut principal de la capçalera */
-        .header-main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            position: relative;
-            z-index: 5;
-
-            padding-top: 80px;
-            /* Compensa l'altura de la navegació fixa */
-            min-height: calc(100vh - 80px);
-            /* Ajusta l'altura mínima */
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            width: 100%;
-        }
-
-        .header-text h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-        }
-
-        .header-text .description {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            margin-bottom: 2.5rem;
-            max-width: 500px;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn-primary {
-            background: var(--white);
-            color: var(--primary-green);
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* Icona de reciclatge */
-        .header-visual {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .recycle-icon {
-            font-size: 12rem;
-            color: rgba(255, 255, 255, 0.15);
-            animation: float 6s ease-in-out infinite;
-            position: relative;
-        }
-
-        .recycle-icon::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            animation: pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.1);
-                opacity: 0.3;
-            }
-        }
-
-        /* Efecte de fons */
-        .background-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.1;
-            background-image:
-                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: slide 20s linear infinite;
-        }
-
-        @keyframes slide {
-            0% {
-                transform: translateX(0) translateY(0);
-            }
-
-            100% {
-                transform: translateX(-50px) translateY(-50px);
-            }
-        }
-
-        /* Menu mòbil */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Responsive actualitzat */
-        @media (max-width: 1024px) {
-            .header-content {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-                text-align: center;
-            }
-
-            .header-text h1 {
-                font-size: 3rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .header-text h1 {
-                font-size: 2.5rem;
-            }
-
-            .header-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn-primary,
-            .btn-secondary {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-
-            .recycle-icon {
-                font-size: 8rem;
-            }
-        }
-
-        .nav-links {
-            transition: all 0.3s ease-out;
-        }
-
-
-
-        /* ESTILS NOUS PER LA IMATGE/HERO */
-        .hero-visual {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 2rem;
-            margin-left: 3rem;
-        }
-
-        .sustainability-icon {
-            font-size: 12rem;
-            color: rgba(255, 255, 255, 0.7);
-            animation: float 3s ease-in-out infinite;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .sustainability-icon:hover {
-            transform: scale(1.05);
-            filter: drop-shadow(0 10px 20px rgba(255, 255, 255, 0.2));
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Versió mòbil */
-        @media (max-width: 768px) {
-            .sustainability-icon {
-                font-size: 8rem;
-                margin-top: 2rem;
-            }
-
-            .hero-visual {
-                margin-left: 0;
-                padding: 1rem;
-            }
-        }
-
-        /* Complement als estils existents del header */
-        .header-content {
-            align-items: center;
-        }
-
-
-
-
-        /* Indicadores Section */
-        .indicadores-section {
-            padding: 5rem 0;
-        }
-
-        .indicadores-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .indicador-card {
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .indicador-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(45, 80, 22, 0.15);
-        }
-
-        .indicador-header {
-            background: var(--gradient);
-            color: var(--white);
-            padding: 1.5rem;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .indicador-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .indicador-content {
-            padding: 2rem;
-        }
-
-        .indicador-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-green);
-            margin-bottom: 1rem;
-        }
-
-        .indicador-description {
-            color: var(--text-medium);
-            margin-bottom: 1.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 
 
 </head>
 
 <body>
-
-    <!--
-//Header antic
-<header class="header">
-    <div class="header-content">
-        <h1>Ciutats i Comunitats Sostenibles</h1>
-        <p class="subtitle">Anàlisi de la gestió de residus sòlids municipals a Catalunya</p>
-        <div class="ods-badge">
-            <i class="fas fa-recycle"></i>
-            <span>ODS 11.6.1</span>
-        </div>
-    </div>
-</header>
-
-//Navigation antiga
-<nav class="nav">
-    <div class="nav-container">
-        <ul class="nav-links">
-            <li><a href="#problema">Problemàtica</a></li>
-            <li><a href="#positius">Indicadors Positius</a></li>
-            <li><a href="#negatius">Punts a Millorar</a></li>
-            <li><a href="#comparacio">Comparació UE</a></li>
-            <li><a href="#solucions">Solucions</a></li>
-            <li><a href="#sobre-nosaltres">Sobre Nosaltres</a></li>
-        </ul>
-    </div>
-</nav>
-
--->
 
     <!-- NOVA CAPÇALERA COMPLETA -->
     <header class="new-header">
@@ -1238,7 +93,7 @@
                         <p>Una gestió adequada dels residus és essencial per <strong>reduir la contaminació, protegir la
                                 salut pública i avançar cap a una economia circular</strong>.</p>
                     </div>
-                    
+
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number">11.6.1</div>
@@ -1257,7 +112,7 @@
                             <div class="stat-label">Residus No Controlats</div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -1300,8 +155,6 @@
     </section>
 
 
-
-
     <section id="prediccions" class="section">
         <div class="container">
             <!-- Loading State -->
@@ -1321,9 +174,6 @@
             <main id="main-content" class="main-content hidden"></main>
         </div>
     </section>
-
-
-
 
 
     <!-- Comparació UE Section -->
@@ -1369,10 +219,6 @@
                         <div class="comparison-label">% Recollida Selectiva</div>
                         <div class="prediction-confidence" id="confidence-2035"></div>
                     </div>
-
-
-
-
 
                 </div>
 
@@ -1420,22 +266,14 @@
                     </p>
 
                     <div class="charts-section">
-                        <!--
-                        <div class="view-toggle">
-                            <button class="toggle-btn active" id="gridView">Vista Graella</button>
-                            <button class="toggle-btn" id="carouselView">Vista Carrussel</button>
-                        </div>
-                        -->
+
 
                         <!-- Grid View -->
                         <div class="charts-grid" id="chartsGrid">
                             <div class="chart-container" onclick="openModal('grafics/grafic_1/index.html')">
                                 <div class="chart-placeholder">
-                                    <!--
-                            <i class="fas fa-chart-line"></i>
-                            -->
-                                    <h4>Evolució de la generació de residus i recollida selectiva (mitjana anual)</h4><!--
-                            <p>Gràfic 1 - Substitueix amb el teu arxiu HTML</p>-->
+
+                                    <h4>Evolució de la generació de residus i recollida selectiva (mitjana anual)</h4>
 
                                     <iframe src="grafics/grafic_1/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
@@ -1450,9 +288,9 @@
                             </div>
                             <div class="chart-container" onclick="openModal('grafics/grafic_3/index.html')">
                                 <div class="chart-placeholder">
-                                    <!-- <i class="fas fa-chart-pie"></i> -->
+
                                     <h4>Distribució per Tipus de Residu</h4>
-                                    <!-- <p>Gràfic 3 - Substitueix amb el teu arxiu HTML</p> -->
+
                                     <iframe src="grafics/grafic_3/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
 
@@ -1460,9 +298,9 @@
                             </div>
                             <div class="chart-container" onclick="openModal('grafics/grafic_4/index.html')">
                                 <div class="chart-placeholder">
-                                    <!--<i class="fas fa-chart-area"></i>-->
+
                                     <h4>Comparativa de Residus Municipals per Any</h4>
-                                    <!--<p>Gràfic 4 - Substitueix amb el teu arxiu HTML</p>-->
+
                                     <iframe src="grafics/grafic_4/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
                                 </div>
@@ -1476,9 +314,9 @@
                                     <div class="carousel-slide">
                                         <div class="chart-container" onclick="openModal('grafics/grafic_1/index.html')">
                                             <div class="chart-placeholder">
-                                                <!--<i class="fas fa-chart-line"></i>-->
+
                                                 <h4>Evolució Temporal de Reciclatge</h4>
-                                                <!--<p>Gràfic 1 - Substitueix amb el teu arxiu HTML</p>-->
+
                                                 <iframe src="grafics/grafic_1/index.html"
                                                     style="width:100%; height:100%; border:none;"></iframe>
                                             </div>
@@ -1487,9 +325,9 @@
                                     <div class="carousel-slide">
                                         <div class="chart-container" onclick="openModal('grafics/grafic_2/index.html')">
                                             <div class="chart-placeholder">
-                                                <!-- <i class="fas fa-chart-bar"></i> -->
+
                                                 <h4>Comparació per Comarques</h4>
-                                                <!--  <p>Gràfic 2 - Substitueix amb el teu arxiu HTML</p> -->
+
                                                 <iframe src="grafics/grafic_2/index.html"
                                                     style="width:100%; height:100%; border:none;"></iframe>
                                             </div>
@@ -1498,9 +336,9 @@
                                     <div class="carousel-slide">
                                         <div class="chart-container" onclick="openModal('grafics/grafic_3/index.html')">
                                             <div class="chart-placeholder">
-                                                <!-- <i class="fas fa-chart-pie"></i> -->
+
                                                 <h4>Distribució per Tipus de Residu</h4>
-                                                <!-- <p>Gràfic 3 - Substitueix amb el teu arxiu HTML</p> -->
+
                                                 <iframe src="grafics/grafic_3/index.html"
                                                     style="width:100%; height:100%; border:none;"></iframe>
                                             </div>
@@ -1509,9 +347,9 @@
                                     <div class="carousel-slide">
                                         <div class="chart-container" onclick="openModal('grafics/grafic_4/index.html')">
                                             <div class="chart-placeholder">
-                                                <!-- <i class="fas fa-chart-area"></i> -->
+
                                                 <h4>Percentatge de Recuperació</h4>
-                                                <!-- <p>Gràfic 4 - Substitueix amb el teu arxiu HTML</p> -->
+
                                                 <iframe src="grafics/grafic_4/index.html"
                                                     style="width:100%; height:100%; border:none;"></iframe>
                                             </div>
@@ -1549,7 +387,8 @@
                             <div class="conclusion-item">
                                 <i class="fas fa-recycle"></i>
                                 <h5>Menys abocaments</h5>
-                                <p>Disminució sostinguda dels residus destinats a dipòsit, en favor de tractaments més sostenibles com el mecànic biològic.
+                                <p>Disminució sostinguda dels residus destinats a dipòsit, en favor de tractaments més
+                                    sostenibles com el mecànic biològic.
                                 </p>
                             </div>
                             <div class="conclusion-item">
@@ -1559,59 +398,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-                    <!-- Indicadores Positivos Section -->
-                     <!--
-                    <section class="section" id="indicadors">
-                        <div class="container">
-                            <h2 class="section-title">Indicadors Positius</h2>
-                            <p class="section-subtitle">Tot i els desafiaments, Catalunya ha mostrat un progrés
-                                significatiu en diversos aspectes de la gestió de residus.</p>
-
-                            <div class="indicadores-grid">
-                                <div class="indicador-card">
-                                    <div class="indicador-header">
-                                        <div class="indicador-value">+15%</div>
-                                    </div>
-                                    <div class="indicador-content">
-                                        <h4 class="indicador-title">Augment de la Recollida Selectiva</h4>
-                                        <p class="indicador-description">La recollida selectiva ha augmentat un 15% en
-                                            els últims 5 anys, mostrant un compromís creixent dels ciutadans amb la
-                                            separació de residus.</p>
-                                    </div>
-                                </div>
-
-                                <div class="indicador-card">
-                                    <div class="indicador-header">
-                                        <div class="indicador-value">-30%</div>
-                                    </div>
-                                    <div class="indicador-content">
-                                        <h4 class="indicador-title">Reducció d'Emissions</h4>
-                                        <p class="indicador-description">Les millores en la gestió de residus han
-                                            contribuït a una reducció del 30% en les emissions de gasos d'efecte
-                                            hivernacle provinents del sector.</p>
-                                    </div>
-                                </div>
-
-                                <div class="indicador-card">
-                                    <div class="indicador-header">
-                                        <div class="indicador-value">85%</div>
-                                    </div>
-                                    <div class="indicador-content">
-                                        <h4 class="indicador-title">Tractament de Residus Controlat</h4>
-                                        <p class="indicador-description">El 85% dels municipis catalans disposen ja
-                                            d'instal·lacions de tractament de residus controlades i modernes.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    -->
-
-
-
 
                 </div>
             </section>
@@ -1624,20 +410,12 @@
                         de residus</p>
 
                     <div class="charts-section">
-                        <!--
-                        <div class="view-toggle">
-                            <button class="toggle-btn active" id="gridView2">Vista Graella</button>
-                            <button class="toggle-btn" id="carouselView2">Vista Carrussel</button>
-                        </div>
-                        -->
 
                         <!-- Grid View -->
                         <div class="charts-grid" id="chartsGrid2">
                             <div class="chart-container" onclick="openModal('grafics/grafic_5/index.html')">
                                 <div class="chart-placeholder">
-                                    <!-- <i class="fas fa-chart-line"></i> -->
                                     <h4>Municipis amb Menor Rendiment</h4>
-                                    <!-- <p>Gràfic 5 - Substitueix amb el teu arxiu HTML</p> -->
                                     <iframe src="grafics/grafic_5/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
 
@@ -1645,9 +423,7 @@
                             </div>
                             <div class="chart-container" onclick="openModal('grafics/grafic_6/index.html')">
                                 <div class="chart-placeholder">
-                                    <!--  <i class="fas fa-chart-bar"></i> -->
                                     <h4>Distribució dels municipis segons el % de recollida selectiva (2023)</h4>
-                                    <!-- <p>Gràfic 6 - Substitueix amb el teu arxiu HTML</p> -->
                                     <iframe src="grafics/grafic_6/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
 
@@ -1655,9 +431,7 @@
                             </div>
                             <div class="chart-container" onclick="openModal('grafics/grafic_7/index.html')">
                                 <div class="chart-placeholder">
-                                    <!-- <i class="fas fa-chart-pie"></i> -->
                                     <h4>Deficiències per Sector</h4>
-                                    <!-- <p>Gràfic 7 - Substitueix amb el teu arxiu HTML</p> -->
                                     <iframe src="grafics/grafic_7/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
 
@@ -1665,9 +439,7 @@
                             </div>
                             <div class="chart-container" onclick="openModal('grafics/grafic_8/index.html')">
                                 <div class="chart-placeholder">
-                                    <!--  <i class="fas fa-chart-area"></i> -->
                                     <h4>Tendències Negatives</h4>
-                                    <!-- <p>Gràfic 8 - Substitueix amb el teu arxiu HTML</p> -->
                                     <iframe src="grafics/grafic_8/index.html"
                                         style="width:100%; height:100%; border:none;"></iframe>
                                 </div>
@@ -1742,25 +514,29 @@
                             <div class="conclusion-item">
                                 <i class="fas fa-arrow-trend-down"></i>
                                 <h5>Disparitats Territorials</h5>
-                                <p>Existeixen diferències significatives entre municipis i comarques en la gestió eficient de
+                                <p>Existeixen diferències significatives entre municipis i comarques en la gestió
+                                    eficient de
                                     residus.</p>
                             </div>
                             <div class="conclusion-item">
                                 <i class="fas fa-warning"></i>
                                 <h5>Limitacions locals</h5>
-                                <p>Els municipis de menor mida mantenen índexs baixos de recollida selectiva, sovint per falta de recursos i models adaptats.
+                                <p>Els municipis de menor mida mantenen índexs baixos de recollida selectiva, sovint per
+                                    falta de recursos i models adaptats.
                                 </p>
                             </div>
                             <div class="conclusion-item">
                                 <i class="fas fa-users"></i>
                                 <h5>Municipis en risc</h5>
-                                <p>Els municipis amb pitjor rendiment en recollida selectiva no arriben al 15%, xifres molt per sota de la mitjana catalana i dels objectius europeus.
+                                <p>Els municipis amb pitjor rendiment en recollida selectiva no arriben al 15%, xifres
+                                    molt per sota de la mitjana catalana i dels objectius europeus.
                                 </p>
                             </div>
                             <div class="conclusion-item">
                                 <i class="fas fa-clock"></i>
                                 <h5>Creixement moderat</h5>
-                                <p>Els primers anys mostren augments destacats, però el ritme s’ha estabilitzat recentment.</p>
+                                <p>Els primers anys mostren augments destacats, però el ritme s’ha estabilitzat
+                                    recentment.</p>
                             </div>
                         </div>
                     </div>
@@ -1768,10 +544,10 @@
             </section>
 
 
-          
+
 
             <!-- Solucions Section -->
-             <!--
+            <!--
             <section id="solucions" class="section" style="background: #f8f9fa;">
                 <div class="container">
                     <h2 class="section-title">Solucions i Recomanacions</h2>
@@ -1821,47 +597,58 @@
                 </div>
             </section>
         -->
-                <!-- Solucions Section -->
-    <section id="solucions" class="section" style="background: #f8f9fa;">
-        <div class="container">
-            <h2 class="section-title">Solucions i Recomanacions</h2>
-            <p class="section-subtitle">Propostes basades en l'anàlisi de dades per millorar la gestió de
+            <!-- Solucions Section -->
+            <section id="solucions" class="section" style="background: #f8f9fa;">
+                <div class="container">
+                    <h2 class="section-title">Solucions i Recomanacions</h2>
+                    <p class="section-subtitle">Propostes basades en l'anàlisi de dades per millorar la gestió de
                         residus a Catalunya</p>
-            
-            <div class="solutions-grid">
-                <div class="solution-card">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h4>Setmana del Compost 2025</h4>
-                    <p>Del 4 al 10 de maig de 2025, Catalunya celebra la Setmana del Compost per promoure el reciclatge orgànic i noves normes que ajuden els municipis amb campanyes, apps i suport local.</p>
+
+                    <div class="solutions-grid">
+                        <div class="solution-card">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h4>Setmana del Compost 2025</h4>
+                            <p>Del 4 al 10 de maig de 2025, Catalunya celebra la Setmana del Compost per promoure el
+                                reciclatge orgànic i noves normes que ajuden els municipis amb campanyes, apps i suport
+                                local.</p>
+                        </div>
+                        <div class="solution-card">
+                            <i class="fas fa-cogs"></i>
+                            <h4>Foment de la reparació en el comerç català:</h4>
+                            <p>La Generalitat impulsa la reparació de productes per reduir residus i fomentar una
+                                economia circular amb tallers i educació.</p>
+                        </div>
+                        <div class="solution-card">
+                            <i class="fas fa-handshake"></i>
+                            <h4>Ampliació de la planta de biometanització de Can Barba:</h4>
+                            <p>El Consorci del Vallès invertirà 16,8 milions per ampliar la planta de biometanització de
+                                Can Barba, convertint residus orgànics en energia i fertilitzants, reduint emissions i
+                                fomentant energies renovables.</p>
+                        </div>
+                        <div class="solution-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Projecte Retexcat: reciclatge tèxtil per a noves peces:</h4>
+                            <p>El projecte Retexcat ha reciclat més de 30.000 kg de roba usada per crear peces infantils
+                                per a Mango, fomentant l’economia circular i reduint l’impacte ambiental. Es vol ampliar
+                                el catàleg, incentivar la donació i col·laborar amb més plataformes per fer créixer el
+                                projecte.</p>
+                        </div>
+                        <div class="solution-card">
+                            <i class="fas fa-euro-sign"></i>
+                            <h4>Incentius Econòmics</h4>
+                            <p>Crear sistemes d'incentius per als municipis que superin els objectius de reciclatge i
+                                penalitzacions per aquells que no compleixin els mínims establerts.</p>
+                        </div>
+                        <div class="solution-card">
+                            <i class="fas fa-leaf"></i>
+                            <h4>Nova normativa per millorar la recollida selectiva a Catalunya:</h4>
+                            <p>Catalunya ha creat una nova norma per millorar la recollida d’orgànics i complir
+                                objectius europeus, fomentant el compostatge, la recollida porta a porta i el pagament
+                                segons residus generats, amb campanyes educatives i suport als municipis.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="solution-card">
-                    <i class="fas fa-cogs"></i>
-                    <h4>Foment de la reparació en el comerç català:</h4>
-                    <p>La Generalitat impulsa la reparació de productes per reduir residus i fomentar una economia circular amb tallers i educació.</p>
-                </div>
-                <div class="solution-card">
-                    <i class="fas fa-handshake"></i>
-                    <h4>Ampliació de la planta de biometanització de Can Barba:</h4>
-                    <p>El Consorci del Vallès invertirà 16,8 milions per ampliar la planta de biometanització de Can Barba, convertint residus orgànics en energia i fertilitzants, reduint emissions i fomentant energies renovables.</p>
-                </div>
-                <div class="solution-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h4>Projecte Retexcat: reciclatge tèxtil per a noves peces:</h4>
-                    <p>El projecte Retexcat ha reciclat més de 30.000 kg de roba usada per crear peces infantils per a Mango, fomentant l’economia circular i reduint l’impacte ambiental. Es vol ampliar el catàleg, incentivar la donació i col·laborar amb més plataformes per fer créixer el projecte.</p>
-                </div>
-                <div class="solution-card">
-                    <i class="fas fa-euro-sign"></i>
-                    <h4>Incentius Econòmics</h4>
-                    <p>Crear sistemes d'incentius per als municipis que superin els objectius de reciclatge i penalitzacions per aquells que no compleixin els mínims establerts.</p>
-                </div>
-                <div class="solution-card">
-                    <i class="fas fa-leaf"></i>
-                    <h4>Nova normativa per millorar la recollida selectiva a Catalunya:</h4>
-                    <p>Catalunya ha creat una nova norma per millorar la recollida d’orgànics i complir objectius europeus, fomentant el compostatge, la recollida porta a porta i el pagament segons residus generats, amb campanyes educatives i suport als municipis.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
             <!-- Sobre Nosaltres Section -->
             <section id="sobre-nosaltres" class="section">
@@ -1870,39 +657,39 @@
                     <p class="section-subtitle">Coneix l'equip darrere d'aquest projecte de sostenibilitat i gestió de
                         residus</p>
 
-                   <div class="team-grid">
-      <div class="team-member">
-        <div class="member-photo">
-          <img src="img/Gerard.webp" alt="Gerard Calvo" />
-        </div>
-        <div class="member-name">Gerard Calvo</div>
-        <div class="member-role">Desenvolupador Web</div>
-      </div>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <div class="member-photo">
+                                <img src="img/Gerard.webp" alt="Gerard Calvo" />
+                            </div>
+                            <div class="member-name">Gerard Calvo</div>
+                            <div class="member-role">Desenvolupador Web</div>
+                        </div>
 
-      <div class="team-member">
-        <div class="member-photo">
-          <img src="img/Agusti.webp" alt="Agustí López" />
-        </div>
-        <div class="member-name">Agustí López</div>
-        <div class="member-role">Desenvolupador  Web</div>
-      </div>
+                        <div class="team-member">
+                            <div class="member-photo">
+                                <img src="img/Agusti.webp" alt="Agustí López" />
+                            </div>
+                            <div class="member-name">Agustí López</div>
+                            <div class="member-role">Desenvolupador Web</div>
+                        </div>
 
-      <div class="team-member">
-        <div class="member-photo">
-          <img src="img/Nella.webp" alt="Anthonella Orosco" />
-        </div>
-        <div class="member-name">Anthonella Orosco</div>
-        <div class="member-role">Desenvolupadora Web</div>
-      </div>
+                        <div class="team-member">
+                            <div class="member-photo">
+                                <img src="img/Nella.webp" alt="Anthonella Orosco" />
+                            </div>
+                            <div class="member-name">Anthonella Orosco</div>
+                            <div class="member-role">Desenvolupadora Web</div>
+                        </div>
 
-      <div class="team-member">
-        <div class="member-photo">
-          <img src="img/Oriol.webp" alt="Oriol Canellas" />
-        </div>
-        <div class="member-name">Oriol Canellas</div>
-        <div class="member-role">Desenvolupador Web</div>
-      </div>
-    </div>
+                        <div class="team-member">
+                            <div class="member-photo">
+                                <img src="img/Oriol.webp" alt="Oriol Canellas" />
+                            </div>
+                            <div class="member-name">Oriol Canellas</div>
+                            <div class="member-role">Desenvolupador Web</div>
+                        </div>
+                    </div>
 
                     <div
                         style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); padding: 3rem; margin-top: 3rem; text-align: center;">
@@ -1953,368 +740,8 @@
                 </div>
             </div>
 
-            <script>
-                // Variables globals
-                let currentSlide1 = 0;
-                let currentSlide2 = 0;
-                const totalSlides = 4;
 
-                // Funcions per canviar entre vista graella i carrussel
-                function setupViewToggle(sectionId) {
-                    const gridBtn = document.getElementById(`gridView${sectionId ? sectionId : ''}`);
-                    const carouselBtn = document.getElementById(`carouselView${sectionId ? sectionId : ''}`);
-                    const grid = document.getElementById(`chartsGrid${sectionId ? sectionId : ''}`);
-                    const carousel = document.getElementById(`chartsCarousel${sectionId ? sectionId : ''}`);
-
-                    gridBtn.addEventListener('click', () => {
-                        gridBtn.classList.add('active');
-                        carouselBtn.classList.remove('active');
-                        grid.style.display = 'grid';
-                        carousel.style.display = 'none';
-                    });
-
-                    carouselBtn.addEventListener('click', () => {
-                        carouselBtn.classList.add('active');
-                        gridBtn.classList.remove('active');
-                        grid.style.display = 'none';
-                        carousel.style.display = 'block';
-                    });
-                }
-
-                // Funcions del carrussel
-                function setupCarousel(sectionId, currentSlideVar) {
-                    const prevBtn = document.getElementById(`prevBtn${sectionId ? sectionId : ''}`);
-                    const nextBtn = document.getElementById(`nextBtn${sectionId ? sectionId : ''}`);
-                    const slides = document.getElementById(`carouselSlides${sectionId ? sectionId : ''}`);
-
-                    prevBtn.addEventListener('click', () => {
-                        if (sectionId === '2') {
-                            currentSlide2 = (currentSlide2 - 1 + totalSlides) % totalSlides;
-                            updateCarousel(slides, currentSlide2);
-                        } else {
-                            currentSlide1 = (currentSlide1 - 1 + totalSlides) % totalSlides;
-                            updateCarousel(slides, currentSlide1);
-                        }
-                    });
-
-                    nextBtn.addEventListener('click', () => {
-                        if (sectionId === '2') {
-                            currentSlide2 = (currentSlide2 + 1) % totalSlides;
-                            updateCarousel(slides, currentSlide2);
-                        } else {
-                            currentSlide1 = (currentSlide1 + 1) % totalSlides;
-                            updateCarousel(slides, currentSlide1);
-                        }
-                    });
-                }
-
-                function updateCarousel(slidesElement, currentSlide) {
-                    const translateX = -currentSlide * 100;
-                    slidesElement.style.transform = `translateX(${translateX}%)`;
-                }
-
-                // Funcions del modal
-                function openModal(chartUrl) {
-                    const modal = document.getElementById('chartModal');
-                    const iframe = document.getElementById('modalIframe');
-                    iframe.src = chartUrl;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                }
-
-                function closeModal() {
-                    const modal = document.getElementById('chartModal');
-                    const iframe = document.getElementById('modalIframe');
-                    modal.style.display = 'none';
-                    iframe.src = '';
-                    document.body.style.overflow = 'auto';
-                }
-
-                // Tancar modal fent clic fora del contingut
-                window.addEventListener('click', (e) => {
-                    const modal = document.getElementById('chartModal');
-                    if (e.target === modal) {
-                        closeModal();
-                    }
-                });
-
-                // Tancar modal amb ESC
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        closeModal();
-                    }
-                });
-
-                // Smooth scrolling per els enllaços de navegació
-                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                    anchor.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const target = document.querySelector(this.getAttribute('href'));
-                        if (target) {
-                            target.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    });
-                });
-
-                // Inicialització quan es carrega la pàgina
-                document.addEventListener('DOMContentLoaded', () => {
-                    // Configurar vista toggle per ambdues seccions
-                    setupViewToggle('');
-                    setupViewToggle('2');
-
-                    // Configurar carrussel per ambdues seccions
-                    setupCarousel('', 1);
-                    setupCarousel('2', 2);
-
-                    // Animacions a l'scroll
-                    const observerOptions = {
-                        threshold: 0.1,
-                        rootMargin: '0px 0px -50px 0px'
-                    };
-
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                entry.target.style.opacity = '1';
-                                entry.target.style.transform = 'translateY(0)';
-                            }
-                        });
-                    }, observerOptions);
-
-                    // Observar elements per animacions
-                    document.querySelectorAll('.solution-card, .team-member, .conclusion-item').forEach(el => {
-                        el.style.opacity = '0';
-                        el.style.transform = 'translateY(30px)';
-                        el.style.transition = 'all 0.6s ease';
-                        observer.observe(el);
-                    });
-                });
-
-                // Actualització automàtica de dades (opcional)
-                async function fetchWasteData() {
-                    try {
-                        const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json');
-                        const data = await response.json();
-
-                        // Aquí pots processar les dades i actualitzar els gràfics
-                        console.log('Dades obtingudes:', data);
-
-                        // Exemple d'actualització de estadístiques
-                        // updateStatistics(data);
-
-                    } catch (error) {
-                        console.error('Error obtenint les dades:', error);
-                    }
-                }
-
-                // Cridar la funció per obtenir dades (opcional)
-                // fetchWasteData();
-
-                // Càlcul predicció recollida selectova
-
-
-                // Global variables
-                let allData = [];
-                let filteredData = [];
-                let predictions = {};
-
-                // Initialize the application
-                document.addEventListener('DOMContentLoaded', function () {
-                    loadData();
-                });
-
-                // Load data from API
-                async function loadData() {
-                    try {
-                        showLoading();
-
-                        const response = await fetch('https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000');
-
-                        if (!response.ok) {
-                            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
-                        }
-
-                        const data = await response.json();
-
-                        if (!data || data.length === 0) {
-                            throw new Error('No s\'han trobat dades a l\'API');
-                        }
-
-                        allData = processData(data);
-                        filteredData = [...allData];
-
-                        // Calculate predictions based on historical data
-                        calculatePredictions();
-
-                        updatePredictions();
-                        hideLoading();
-
-                    } catch (error) {
-                        console.error('Error loading data:', error);
-                        showError(error.message);
-                    }
-                }
-
-                // Process raw data from API
-                function processData(rawData) {
-                    return rawData.map(item => ({
-                        year: parseInt(item.any),
-                        municipalityCode: item.codi_municipi,
-                        municipality: item.municipi,
-                        comarca: item.comarca,
-                        population: parseInt(item.poblaci) || 0,
-                        selectiveCollection: parseFloat(item.r_s_r_m_total) || 0,
-                        nonSelectivePercentage: parseFloat(item.f_r_r_m) || 0,
-                        totalWasteGeneration: parseFloat(item.generaci_residus_municipal) || 0,
-                        kgPerHabitantYear: parseFloat(item.kg_hab_any) || 0,
-                        organicMatter: parseFloat(item.mat_ria_org_nica) || 0,
-                        paperCardboard: parseFloat(item.paper_i_cartr) || 0,
-                        glass: parseFloat(item.vidre) || 0,
-                        lightPackaging: parseFloat(item.envasos_lleugers) || 0,
-                        bulkyWaste: parseFloat(item.residus_voluminosos_fusta) || 0,
-                        textile: parseFloat(item.t_xtil) || 0,
-                        oil: parseFloat(item.olis_vegetals) || 0
-                    })).filter(item =>
-                        item.year && item.municipality && !isNaN(item.selectiveCollection)
-                    );
-                }
-
-                // Calculate predictions using linear regression
-                function calculatePredictions() {
-                    // Get yearly averages for all Catalunya
-                    const years = [...new Set(allData.map(item => item.year))].sort();
-                    const yearlyAverages = years.map(year => {
-                        const yearData = allData.filter(item => item.year === year);
-                        const avg = yearData.reduce((sum, item) => sum + item.selectiveCollection, 0) / yearData.length;
-                        return { year, percentage: avg };
-                    });
-
-                    if (yearlyAverages.length < 3) {
-                        // Not enough data for reliable prediction
-                        predictions = { 2025: null, 2030: null, 2035: null };
-                        return;
-                    }
-
-                    // Linear regression calculation
-                    const n = yearlyAverages.length;
-                    const sumX = yearlyAverages.reduce((sum, item) => sum + item.year, 0);
-                    const sumY = yearlyAverages.reduce((sum, item) => sum + item.percentage, 0);
-                    const sumXY = yearlyAverages.reduce((sum, item) => sum + (item.year * item.percentage), 0);
-                    const sumX2 = yearlyAverages.reduce((sum, item) => sum + (item.year * item.year), 0);
-
-                    // Calculate slope (m) and intercept (b) for y = mx + b
-                    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-                    const intercept = (sumY - slope * sumX) / n;
-
-                    // Calculate R² (coefficient of determination) for reliability
-                    const meanY = sumY / n;
-                    const totalSumSquares = yearlyAverages.reduce((sum, item) => sum + Math.pow(item.percentage - meanY, 2), 0);
-                    const residualSumSquares = yearlyAverages.reduce((sum, item) => {
-                        const predicted = slope * item.year + intercept;
-                        return sum + Math.pow(item.percentage - predicted, 2);
-                    }, 0);
-                    const rSquared = 1 - (residualSumSquares / totalSumSquares);
-
-                    // Only use predictions if R² > 0.5 (reasonable correlation)
-                    if (rSquared > 0.5) {
-                        predictions = {
-                            2025: Math.max(0, Math.min(100, slope * 2025 + intercept)),
-                            2030: Math.max(0, Math.min(100, slope * 2030 + intercept)),
-                            2035: Math.max(0, Math.min(100, slope * 2035 + intercept)),
-                            reliability: rSquared,
-                            historicalData: yearlyAverages
-                        };
-                    } else {
-                        // Use average growth rate as fallback
-                        const recentYears = yearlyAverages.slice(-5); // Last 5 years
-                        const growthRates = [];
-
-                        for (let i = 1; i < recentYears.length; i++) {
-                            const rate = recentYears[i].percentage - recentYears[i - 1].percentage;
-                            growthRates.push(rate);
-                        }
-
-                        const avgGrowthRate = growthRates.reduce((sum, rate) => sum + rate, 0) / growthRates.length;
-                        const lastYear = recentYears[recentYears.length - 1];
-
-                        predictions = {
-                            2025: Math.max(0, Math.min(100, lastYear.percentage + avgGrowthRate * (2025 - lastYear.year))),
-                            2030: Math.max(0, Math.min(100, lastYear.percentage + avgGrowthRate * (2030 - lastYear.year))),
-                            2035: Math.max(0, Math.min(100, lastYear.percentage + avgGrowthRate * (2035 - lastYear.year))),
-                            reliability: 'moderate',
-                            historicalData: yearlyAverages
-                        };
-                    }
-                }
-
-                // Update predictions display
-                function updatePredictions() {
-                    const predictionYears = [2025, 2030, 2035];
-
-                    predictionYears.forEach(year => {
-                        const valueElement = document.getElementById(`prediction-${year}`);
-                        const confidenceElement = document.getElementById(`confidence-${year}`);
-
-                        if (predictions[year] !== null && predictions[year] !== undefined) {
-                            valueElement.textContent = `${predictions[year].toFixed(1)}%`;
-
-                            // Show confidence/reliability information
-                            if (typeof predictions.reliability === 'number') {
-                                const reliabilityPercent = (predictions.reliability * 100).toFixed(0);
-                                confidenceElement.textContent = `Fiabilitat: ${reliabilityPercent}% (R²)`;
-
-                                // Color based on reliability
-                                if (predictions.reliability > 0.8) {
-                                    confidenceElement.style.backgroundColor = '#e8f5e8';
-                                    confidenceElement.style.color = '#2d7d32';
-                                } else if (predictions.reliability > 0.6) {
-                                    confidenceElement.style.backgroundColor = '#fff3e0';
-                                    confidenceElement.style.color = '#ff9800';
-                                } else {
-                                    confidenceElement.style.backgroundColor = '#ffebee';
-                                    confidenceElement.style.color = '#f44336';
-                                }
-                            } else {
-                                confidenceElement.textContent = 'Estimació basada en tendència recent';
-                                confidenceElement.style.backgroundColor = '#f5f5f5';
-                                confidenceElement.style.color = '#6c757d';
-                            }
-                        } else {
-                            valueElement.textContent = '--';
-                            confidenceElement.textContent = 'Dades insuficients per predicció';
-                            confidenceElement.style.backgroundColor = '#f5f5f5';
-                            confidenceElement.style.color = '#6c757d';
-                        }
-                    });
-                }
-
-                // Utility functions
-                function showLoading() {
-                    document.getElementById('loading').classList.remove('hidden');
-                    document.getElementById('main-content').classList.add('hidden');
-                    document.getElementById('error').classList.add('hidden');
-                }
-
-                function hideLoading() {
-                    document.getElementById('loading').classList.add('hidden');
-                    document.getElementById('main-content').classList.remove('hidden');
-                }
-
-                function showError(message) {
-                    document.getElementById('loading').classList.add('hidden');
-                    document.getElementById('main-content').classList.add('hidden');
-                    document.getElementById('error').classList.remove('hidden');
-                    document.getElementById('error-message').textContent = message;
-                }
-
-
-
-
-
-            </script>
+            <script src="script.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,10 +13,12 @@
       background: #f9f9f9;
       margin: 0;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 1rem;
     }
+
     .chart-container {
       position: relative;
       background: #f8f9fa;
@@ -27,11 +30,13 @@
       height: 500px;
       transition: all 0.3s ease;
     }
+
     .chart-wrapper {
       width: 100%;
       height: 100%;
       position: relative;
     }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -39,6 +44,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="chart-container">
     <div class="chart-wrapper">
@@ -49,20 +55,20 @@
     async function fetchAndRender() {
       try {
         const response = await fetch("https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000");
-         // const response = await fetch("../../api/residus.php");
+        // const response = await fetch("../../api/residus.php");
         const data = await response.json();
         const valors = data
           .filter(item => item.any === "2023" && item.r_s_r_m_total)
           .map(item => parseFloat(item.r_s_r_m_total))
           .filter(val => !isNaN(val));
-        
+
         const binSize = 5;
-        const bins = Array.from({length: 20}, (_, i) => i * binSize);
+        const bins = Array.from({ length: 20 }, (_, i) => i * binSize);
         const freq = bins.map((_, i) =>
           valors.filter(v => v >= i * binSize && v < (i + 1) * binSize).length
         );
         const labels = bins.map((v, i) => `${v} - ${v + binSize}`);
-        
+
         new Chart(document.getElementById("histograma"), {
           type: "bar",
           data: {
@@ -136,4 +142,5 @@
     fetchAndRender();
   </script>
 </body>
+
 </html>

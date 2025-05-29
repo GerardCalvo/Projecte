@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8">
   <title>Evolució de la generació de residus</title>
@@ -9,27 +10,32 @@
       font-family: Arial, sans-serif;
       margin: 20px;
     }
+
     /* .controls {
       margin-bottom: 20px;
     } */
     label {
       margin-right: 10px;
     }
-    select, input {
+
+    select,
+    input {
       margin-right: 20px;
     }
+
     canvas {
       max-width: 1000px;
       max-height: 600px;
     }
   </style>
 </head>
+
 <body>
 
-<!-- <h1>Evolució de la generació de residus i recollida selectiva (mitjana anual)</h1> -->
+  <!-- <h1>Evolució de la generació de residus i recollida selectiva (mitjana anual)</h1> -->
 
-<!-- Controls ocults -->
-<!--
+  <!-- Controls ocults -->
+  <!--
 <div class="controls">
   <label for="yearFrom">Any des de:</label>
   <input type="number" id="yearFrom" value="2000" min="2000" max="2023" />
@@ -55,199 +61,200 @@
 </div>
 -->
 
-<canvas id="lineChart"></canvas>
+  <canvas id="lineChart"></canvas>
 
-<script>
-  const apiURL = "https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000";
-  //const apiURL = "../../api/residus.php"; 
+  <script>
+    const apiURL = "https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000";
+    //const apiURL = "../../api/residus.php"; 
 
-  let rawData = [];
-  let chart = null;
+    let rawData = [];
+    let chart = null;
 
-  async function fetchData() {
-    try {
-      const response = await fetch(apiURL);
-      if (!response.ok) throw new Error('Error carregant dades de l’API');
-      const jsonData = await response.json();
-      rawData = parseAPIData(jsonData);
-      updateChart(); // S'executa automàticament amb valors per defecte
-    } catch (e) {
-      alert("No s'han pogut carregar les dades: " + e.message);
+    async function fetchData() {
+      try {
+        const response = await fetch(apiURL);
+        if (!response.ok) throw new Error('Error carregant dades de l’API');
+        const jsonData = await response.json();
+        rawData = parseAPIData(jsonData);
+        updateChart(); // S'executa automàticament amb valors per defecte
+      } catch (e) {
+        alert("No s'han pogut carregar les dades: " + e.message);
+      }
     }
-  }
 
-  function parseAPIData(data) {
-    return data.map(d => {
-      const any = parseInt(d.any);
-      const poblacio = Number(d.poblaci) || 0;
-      const kg_hab_any = Number(d.kg_hab_any) || 0;
-      const kg_hab_any_rs = Number(d.kg_hab_any_recollida_selectiva) || 0;
-      const percent_rs = Number(d.r_s_r_m_total) || 0;
+    function parseAPIData(data) {
+      return data.map(d => {
+        const any = parseInt(d.any);
+        const poblacio = Number(d.poblaci) || 0;
+        const kg_hab_any = Number(d.kg_hab_any) || 0;
+        const kg_hab_any_rs = Number(d.kg_hab_any_recollida_selectiva) || 0;
+        const percent_rs = Number(d.r_s_r_m_total) || 0;
 
-      return {
-        any,
-        poblacio,
-        kg_hab_any,
-        kg_hab_any_recollida_selectiva: kg_hab_any_rs,
-        percent_recollida_selectiva: percent_rs
-      };
-    });
-  }
-
-  function processData(yearFrom, yearTo, minPop, maxPop, selectedLines) {
-    const filtered = rawData.filter(d =>
-      d.any >= yearFrom &&
-      d.any <= yearTo &&
-      d.poblacio >= minPop &&
-      d.poblacio <= maxPop
-    );
-
-    const aggregation = {};
-    filtered.forEach(d => {
-      if (!aggregation[d.any]) aggregation[d.any] = { sum1: 0, sum2: 0, sum3: 0, count: 0 };
-      aggregation[d.any].sum1 += d.kg_hab_any;
-      aggregation[d.any].sum2 += d.kg_hab_any_recollida_selectiva;
-      aggregation[d.any].sum3 += d.percent_recollida_selectiva;
-      aggregation[d.any].count++;
-    });
-
-    const years = Object.keys(aggregation).map(y => parseInt(y)).sort((a, b) => a - b);
-    const dataset1 = years.map(y => aggregation[y].count ? aggregation[y].sum1 / aggregation[y].count : null);
-    const dataset2 = years.map(y => aggregation[y].count ? aggregation[y].sum2 / aggregation[y].count : null);
-    const dataset3 = years.map(y => aggregation[y].count ? aggregation[y].sum3 / aggregation[y].count : null);
-
-    const datasets = [];
-    if (selectedLines.includes('line1')) {
-      datasets.push({
-        label: 'Kg / hab / any',
-        data: dataset1,
-        borderColor: 'red',
-        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-        yAxisID: 'y',
-        tension: 0.1
-      });
-    }
-    if (selectedLines.includes('line2')) {
-      datasets.push({
-        label: 'Kg/hab/any recollida selectiva',
-        data: dataset2,
-        borderColor: 'green',
-        backgroundColor: 'rgba(0, 255, 0, 0.1)',
-        yAxisID: 'y',
-        tension: 0.1
-      });
-    }
-    if (selectedLines.includes('line3')) {
-      datasets.push({
-        label: '% Recollida selectiva',
-        data: dataset3,
-        borderColor: 'blue',
-        backgroundColor: 'rgba(0, 0, 255, 0.1)',
-        yAxisID: 'y1',
-        tension: 0.1
+        return {
+          any,
+          poblacio,
+          kg_hab_any,
+          kg_hab_any_recollida_selectiva: kg_hab_any_rs,
+          percent_recollida_selectiva: percent_rs
+        };
       });
     }
 
-    return { years, datasets };
-  }
+    function processData(yearFrom, yearTo, minPop, maxPop, selectedLines) {
+      const filtered = rawData.filter(d =>
+        d.any >= yearFrom &&
+        d.any <= yearTo &&
+        d.poblacio >= minPop &&
+        d.poblacio <= maxPop
+      );
 
-  function renderChart(data) {
-    const ctx = document.getElementById("lineChart").getContext("2d");
-    if (chart) chart.destroy();
+      const aggregation = {};
+      filtered.forEach(d => {
+        if (!aggregation[d.any]) aggregation[d.any] = { sum1: 0, sum2: 0, sum3: 0, count: 0 };
+        aggregation[d.any].sum1 += d.kg_hab_any;
+        aggregation[d.any].sum2 += d.kg_hab_any_recollida_selectiva;
+        aggregation[d.any].sum3 += d.percent_recollida_selectiva;
+        aggregation[d.any].count++;
+      });
 
-    chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: data.years,
-        datasets: data.datasets
-      },
-      options: {
-        responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false
+      const years = Object.keys(aggregation).map(y => parseInt(y)).sort((a, b) => a - b);
+      const dataset1 = years.map(y => aggregation[y].count ? aggregation[y].sum1 / aggregation[y].count : null);
+      const dataset2 = years.map(y => aggregation[y].count ? aggregation[y].sum2 / aggregation[y].count : null);
+      const dataset3 = years.map(y => aggregation[y].count ? aggregation[y].sum3 / aggregation[y].count : null);
+
+      const datasets = [];
+      if (selectedLines.includes('line1')) {
+        datasets.push({
+          label: 'Kg / hab / any',
+          data: dataset1,
+          borderColor: 'red',
+          backgroundColor: 'rgba(255, 0, 0, 0.1)',
+          yAxisID: 'y',
+          tension: 0.1
+        });
+      }
+      if (selectedLines.includes('line2')) {
+        datasets.push({
+          label: 'Kg/hab/any recollida selectiva',
+          data: dataset2,
+          borderColor: 'green',
+          backgroundColor: 'rgba(0, 255, 0, 0.1)',
+          yAxisID: 'y',
+          tension: 0.1
+        });
+      }
+      if (selectedLines.includes('line3')) {
+        datasets.push({
+          label: '% Recollida selectiva',
+          data: dataset3,
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0, 0, 255, 0.1)',
+          yAxisID: 'y1',
+          tension: 0.1
+        });
+      }
+
+      return { years, datasets };
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById("lineChart").getContext("2d");
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.years,
+          datasets: data.datasets
         },
-        stacked: false,
-        plugins: {
-          title: {
-            display: true,
-            /*text: 'Evolució de la generació de residus i recollida selectiva (mitjana anual)' */
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false
           },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                if (context.parsed.y !== null) {
-                  if (context.dataset.label === '% Recollida selectiva') {
-                    label += context.parsed.y.toFixed(1) + '%';
-                  } else {
-                    label += context.parsed.y.toFixed(1) + ' kg';
+          stacked: false,
+          plugins: {
+            title: {
+              display: true,
+              /*text: 'Evolució de la generació de residus i recollida selectiva (mitjana anual)' */
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
                   }
+                  if (context.parsed.y !== null) {
+                    if (context.dataset.label === '% Recollida selectiva') {
+                      label += context.parsed.y.toFixed(1) + '%';
+                    } else {
+                      label += context.parsed.y.toFixed(1) + ' kg';
+                    }
+                  }
+                  return label;
                 }
-                return label;
               }
             }
-          }
-        },
-        scales: {
-          y: {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            title: {
-              display: true,
-              text: 'Kg per càpita'
-            }
           },
-          y1: {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            min: 0,
-            max: 100,
-            grid: {
-              drawOnChartArea: false
-            },
-            title: {
+          scales: {
+            y: {
+              type: 'linear',
               display: true,
-              text: '% Recollida selectiva'
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Kg per càpita'
+              }
             },
-            ticks: {
-              callback: function(value) {
-                return value + '%';
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              min: 0,
+              max: 100,
+              grid: {
+                drawOnChartArea: false
+              },
+              title: {
+                display: true,
+                text: '% Recollida selectiva'
+              },
+              ticks: {
+                callback: function (value) {
+                  return value + '%';
+                }
               }
             }
           }
         }
-      }
-    });
-  }
-
-  function updateChart() {
-    const yearFrom = 2000;
-    const yearTo = 2023;
-    const minPop = 0;
-    const maxPop = 100000;
-    const selectedLines = ['line1', 'line2', 'line3'];
-
-    const processedData = processData(yearFrom, yearTo, minPop, maxPop, selectedLines);
-
-    if (processedData.datasets.length === 0) {
-      alert("No hi ha dades que compleixin els criteris.");
-      return;
+      });
     }
 
-    renderChart(processedData);
-  }
+    function updateChart() {
+      const yearFrom = 2000;
+      const yearTo = 2023;
+      const minPop = 0;
+      const maxPop = 100000;
+      const selectedLines = ['line1', 'line2', 'line3'];
 
-  // Eliminar escoltador del botó
-  // document.getElementById("updateBtn").addEventListener("click", updateChart);
+      const processedData = processData(yearFrom, yearTo, minPop, maxPop, selectedLines);
 
-  fetchData();
-</script>
+      if (processedData.datasets.length === 0) {
+        alert("No hi ha dades que compleixin els criteris.");
+        return;
+      }
+
+      renderChart(processedData);
+    }
+
+    // Eliminar escoltador del botó
+    // document.getElementById("updateBtn").addEventListener("click", updateChart);
+
+    fetchData();
+  </script>
 
 </body>
+
 </html>

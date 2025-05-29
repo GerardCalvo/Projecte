@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +12,21 @@
             font-family: Arial, sans-serif;
             background: transparent;
         }
+
         #heatmap {
             width: 100vw;
             height: 100vh;
         }
     </style>
 </head>
+
 <body>
     <div id="heatmap"></div>
 
     <script>
         const apiUrl = 'https://analisi.transparenciacatalunya.cat/resource/69zu-w48s.json?$limit=23000';
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadData();
         });
 
@@ -33,10 +36,10 @@
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
                 }
-                
+
                 const allData = await response.json();
                 createHeatmap(allData);
-                
+
             } catch (err) {
                 console.error('Error carregant dades:', err);
             }
@@ -130,13 +133,13 @@
             }];
 
             const layout = {
-                xaxis: { 
-                    title: 'Any', 
+                xaxis: {
+                    title: 'Any',
                     tickangle: -45,
                     side: 'bottom'
                 },
-                yaxis: { 
-                    title: 'Comarca', 
+                yaxis: {
+                    title: 'Comarca',
                     automargin: true,
                     tickfont: { size: 10 }
                 },
@@ -147,7 +150,7 @@
                 plot_bgcolor: 'rgba(0,0,0,0)'
             };
 
-            const config = { 
+            const config = {
                 responsive: true,
                 displayModeBar: false
             };
@@ -156,4 +159,5 @@
         }
     </script>
 </body>
+
 </html>
