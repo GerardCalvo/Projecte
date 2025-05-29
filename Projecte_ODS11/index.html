@@ -498,19 +498,24 @@
             box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
         }
 
-        .member-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: var(--gradient);
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--white);
-            font-weight: 600;
-        }
+.member-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--gradient);
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Important per tallar la imatge */
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
         .member-name {
             font-family: 'Space Grotesk', sans-serif;
@@ -1233,7 +1238,7 @@
                         <p>Una gestió adequada dels residus és essencial per <strong>reduir la contaminació, protegir la
                                 salut pública i avançar cap a una economia circular</strong>.</p>
                     </div>
-                    <!--
+                    
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number">11.6.1</div>
@@ -1252,7 +1257,7 @@
                             <div class="stat-label">Residus No Controlats</div>
                         </div>
                     </div>
-                    -->
+                    
                 </div>
             </div>
         </div>
@@ -1406,6 +1411,7 @@
 
             <!---------------------------------------------------------------------------------->
 
+            <!--
             <!-- Indicadors Positius Section -->
             <section id="positius" class="section">
                 <div class="container">
@@ -1557,6 +1563,7 @@
 
 
                     <!-- Indicadores Positivos Section -->
+                     <!--
                     <section class="section" id="indicadors">
                         <div class="container">
                             <h2 class="section-title">Indicadors Positius</h2>
@@ -1601,6 +1608,7 @@
                             </div>
                         </div>
                     </section>
+                    -->
 
 
 
@@ -1763,6 +1771,7 @@
           
 
             <!-- Solucions Section -->
+             <!--
             <section id="solucions" class="section" style="background: #f8f9fa;">
                 <div class="container">
                     <h2 class="section-title">Solucions i Recomanacions</h2>
@@ -1811,6 +1820,48 @@
                     </div>
                 </div>
             </section>
+        -->
+                <!-- Solucions Section -->
+    <section id="solucions" class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Solucions i Recomanacions</h2>
+            <p class="section-subtitle">Propostes basades en l'anàlisi de dades per millorar la gestió de
+                        residus a Catalunya</p>
+            
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>Setmana del Compost 2025</h4>
+                    <p>Del 4 al 10 de maig de 2025, Catalunya celebra la Setmana del Compost per promoure el reciclatge orgànic i noves normes que ajuden els municipis amb campanyes, apps i suport local.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-cogs"></i>
+                    <h4>Foment de la reparació en el comerç català:</h4>
+                    <p>La Generalitat impulsa la reparació de productes per reduir residus i fomentar una economia circular amb tallers i educació.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Ampliació de la planta de biometanització de Can Barba:</h4>
+                    <p>El Consorci del Vallès invertirà 16,8 milions per ampliar la planta de biometanització de Can Barba, convertint residus orgànics en energia i fertilitzants, reduint emissions i fomentant energies renovables.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Projecte Retexcat: reciclatge tèxtil per a noves peces:</h4>
+                    <p>El projecte Retexcat ha reciclat més de 30.000 kg de roba usada per crear peces infantils per a Mango, fomentant l’economia circular i reduint l’impacte ambiental. Es vol ampliar el catàleg, incentivar la donació i col·laborar amb més plataformes per fer créixer el projecte.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-euro-sign"></i>
+                    <h4>Incentius Econòmics</h4>
+                    <p>Crear sistemes d'incentius per als municipis que superin els objectius de reciclatge i penalitzacions per aquells que no compleixin els mínims establerts.</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Nova normativa per millorar la recollida selectiva a Catalunya:</h4>
+                    <p>Catalunya ha creat una nova norma per millorar la recollida d’orgànics i complir objectius europeus, fomentant el compostatge, la recollida porta a porta i el pagament segons residus generats, amb campanyes educatives i suport als municipis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
             <!-- Sobre Nosaltres Section -->
             <section id="sobre-nosaltres" class="section">
@@ -1819,40 +1870,39 @@
                     <p class="section-subtitle">Coneix l'equip darrere d'aquest projecte de sostenibilitat i gestió de
                         residus</p>
 
-                    <div class="team-grid">
-                        <div class="team-member">
-                            <div class="member-photo">
-                                <!-- Substituir amb <img src="foto1.jpg" alt="Nom 1"> -->
-                                M1
-                            </div>
-                            <div class="member-name">Membre 1</div>
-                            <div class="member-role">Especialista en Sostenibilitat</div>
-                        </div>
-                        <div class="team-member">
-                            <div class="member-photo">
-                                <!-- Substituir amb <img src="foto2.jpg" alt="Nom 2"> -->
-                                M2
-                            </div>
-                            <div class="member-name">Membre 2</div>
-                            <div class="member-role">Analista de Dades</div>
-                        </div>
-                        <div class="team-member">
-                            <div class="member-photo">
-                                <!-- Substituir amb <img src="foto3.jpg" alt="Nom 3"> -->
-                                M3
-                            </div>
-                            <div class="member-name">Membre 3</div>
-                            <div class="member-role">Expert en Medi Ambient</div>
-                        </div>
-                        <div class="team-member">
-                            <div class="member-photo">
-                                <!-- Substituir amb <img src="foto4.jpg" alt="Nom 4"> -->
-                                M4
-                            </div>
-                            <div class="member-name">Membre 4</div>
-                            <div class="member-role">Desenvolupador Web</div>
-                        </div>
-                    </div>
+                   <div class="team-grid">
+      <div class="team-member">
+        <div class="member-photo">
+          <img src="img/Gerard.webp" alt="Gerard Calvo" />
+        </div>
+        <div class="member-name">Gerard Calvo</div>
+        <div class="member-role">Desenvolupador Web</div>
+      </div>
+
+      <div class="team-member">
+        <div class="member-photo">
+          <img src="img/Agusti.webp" alt="Agustí López" />
+        </div>
+        <div class="member-name">Agustí López</div>
+        <div class="member-role">Desenvolupador  Web</div>
+      </div>
+
+      <div class="team-member">
+        <div class="member-photo">
+          <img src="img/Nella.webp" alt="Anthonella Orosco" />
+        </div>
+        <div class="member-name">Anthonella Orosco</div>
+        <div class="member-role">Desenvolupadora Web</div>
+      </div>
+
+      <div class="team-member">
+        <div class="member-photo">
+          <img src="img/Oriol.webp" alt="Oriol Canellas" />
+        </div>
+        <div class="member-name">Oriol Canellas</div>
+        <div class="member-role">Desenvolupador Web</div>
+      </div>
+    </div>
 
                     <div
                         style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); padding: 3rem; margin-top: 3rem; text-align: center;">
